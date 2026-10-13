@@ -1590,7 +1590,7 @@ const PRE = {
       { id: "2b", part: "b", type: "judge", correct: "fehlerhaft",
         q: "Nele hat den Zustand des Objekts `fenster` aus dem Objektinspektor in eine Objektkarte übersetzt.",
         scene: { insp: ["fenster", "Circle", [["int diameter", "20"], ["int xPosition", "100"], ["int yPosition", "150"], ["String color", '"yellow"'], ["boolean isVisible", "true"]]],
-                 card: ["Circle : fenster", ["diameter = 20.0", "xPosition = 100", "yPosition = 150", 'color = "yellow"', "isVisible = true"], "Neles Objektkarte"] },
+                 card: ["Circle : fenster", ["diameter = 20.0", "xPosition = 100", "yPosition = 150", 'color = "yellow"', "isVisible = true"], ["makeVisible()", "changeSize(newDiameter: int)"]] },
         task: "**Beurteile**, ob Neles Objektkarte korrekt oder fehlerhaft ist. **Begründe** dein Urteil und gib bei jedem Fehler die richtige **Korrektur** an.",
         concepts: [
           ["Der **Kopf** ist vertauscht – richtig ist `fenster : Circle` (erst das Objekt, dann die Klasse)", ["kopf", "reihenfolge", "vertausch", "umgedreht", "falsch\\s*(herum|rum)", "objekt\\w*\\s+(zuerst|vorne|vor|links|first)", "zuerst\\s+(das\\s+)?objekt", "fenster:circle"]],
@@ -1614,10 +1614,10 @@ const PRE = {
 
 const FINAL = {
   key: "final", code: "D2", title: "Final-Flight-Check", showScene: true, sub: "Abschlussdiagnose · Wie sicher beurteile ich jetzt?",
-  intro: "Bearbeite die folgenden drei Aufgaben.",
+  intro: "Bearbeite die folgenden drei Aufgaben. Jede Aufgabe enthält zwei Beurteilungen.",
   items: [
     { area: 0, parts: [
-      { id: "F1", part: "b", type: "judge", correct: "korrekt",
+      { id: "F1a", lbl: "a", part: "b", type: "judge", correct: "korrekt",
         q: "Lea hat den Satz „Die Spitze der Rakete ist rot.“ folgendermaßen in Fachsprache übersetzt:",
         quote: "„Das Objekt `spitze` hat das Attribut `color` mit dem Wert `\"red\"`.“",
         ref: { lead: "Zum Vergleich siehst du die Klassenkarte der Klasse `Triangle`:",
@@ -1628,19 +1628,48 @@ const FINAL = {
           ["`spitze` ist ein **Objekt** (der Klasse `Triangle`)", ["spitze\\W+(\\w+\\W+){0,3}objekt", "objekt\\W+(\\w+\\W+){0,2}spitze", "triangle"]],
           ["`color` ist ein **Attribut**", ["color\\W+(\\w+\\W+){0,3}attribut", "attribut\\w*\\W+(\\w+\\W+){0,2}color", "farbe\\W+(\\w+\\W+){0,3}attribut"]],
           ["`\"red\"` ist der **Wert** des Attributs", ["red\\W+(\\w+\\W+){0,4}wert", "wert\\w*\\W+(\\w+\\W+){0,3}red", "attributwert", "rot\\W+(\\w+\\W+){0,3}wert"]]],
-        model: "Die Übersetzung ist **korrekt**: `spitze` ist ein **Objekt** der Klasse `Triangle`, `color` ist ein **Attribut** und `\"red\"` ist sein **Wert** . Laut Klassenkarte gibt es das Attribut `color` mit dem Datentyp `String`; `\"red\"` ist ein passender Wert." } ] },
+        model: "Die Übersetzung ist **korrekt**: `spitze` ist ein **Objekt** der Klasse `Triangle`, `color` ist ein **Attribut** und `\"red\"` ist sein **Wert**. Laut Klassenkarte gibt es das Attribut `color` mit dem Datentyp `String`; `\"red\"` ist ein passender Wert." },
+      { id: "F1b", lbl: "b", part: "b", type: "judge", correct: "fehlerhaft",
+        q: "Max hat den Satz „Das Fenster ist gelb.“ folgendermaßen in Fachsprache übersetzt:",
+        quote: "„Das Objekt `fenster` hat die Methode `color` mit dem Wert `\"yellow\"`.“",
+        ref: { lead: "Zum Vergleich siehst du die Klassenkarte der Klasse `Circle`:",
+               cls: ["Circle", ["diameter: int", "xPosition: int", "yPosition: int", "color: String", "isVisible: boolean"],
+                     ["makeVisible()", "moveHorizontal(distance: int)", "moveVertical(distance: int)", "changeSize(newDiameter: int)", "changeColor(newColor: String)"]] },
+        task: "**Beurteile**, ob Max’ Übersetzung korrekt oder fehlerhaft ist. **Begründe** dein Urteil und gib die richtige **Korrektur** an.",
+        concepts: [
+          ["`color` ist keine Methode, sondern ein **Attribut** (es beschreibt den **Zustand**)", ["color\\W+(\\w+\\W+){0,4}attribut", "attribut\\w*\\W+(\\w+\\W+){0,2}color", "kein\\w*\\s+methode", "nicht\\s+(\\w+\\s+){0,2}methode", "statt\\s+(der\\s+)?methode", "zustand"]],
+          ["Eine **Methode** beschreibt ein **Verhalten** (z. B. `changeColor`); richtig ist: „Das Objekt `fenster` hat das **Attribut** `color` mit dem Wert `\"yellow\"`.“", ["changecolor", "verhalten", "\\btun\\b", "ausfuehr", "aktion", "hat\\s+das\\s+attribut\\s+color", "attribut\\s+color\\s+mit"]]],
+        model: "Die Übersetzung ist **fehlerhaft**: `color` ist keine **Methode**, sondern ein **Attribut** – es beschreibt den **Zustand** des Objekts. Methoden beschreiben ein **Verhalten**, z. B. `changeColor`. Korrekt: „Das Objekt `fenster` hat das **Attribut** `color` mit dem Wert `\"yellow\"`.“" } ] },
     { area: 1, parts: [
-      { id: "F2", part: "b", type: "judge", correct: "fehlerhaft",
-        q: "Tom hat den Zustand des Objekts `rumpfOben` aus dem Objektinspektor in eine Objektkarte übersetzt.",
-        scene: { insp: ["rumpfOben", "Square", [["int size", "40"], ["int xPosition", "90"], ["int yPosition", "140"], ["String color", '"blue"'], ["boolean isVisible", "true"]]],
-                 card: ["rumpfOben : Square", ["size: int", "xPosition = 90", "yPosition = 140", "color = blue", "isVisible = true"], "Toms Objektkarte"] },
+      { id: "F2a", lbl: "a", part: "b", type: "judge", correct: "fehlerhaft",
+        q: "Mia hat den Zustand des Objekts `rumpfUnten` aus dem Objektinspektor in eine Objektkarte übersetzt.",
+        scene: { insp: ["rumpfUnten", "Square", [["int size", "40"], ["int xPosition", "90"], ["int yPosition", "180"], ["String color", '"blue"'], ["boolean isVisible", "true"]]],
+                 card: ["rumpfUnten : Square", ["size = 40", "xPosition = 90.0", "yPosition = 180", "color = blue", "isVisible = true"], ["makeVisible()", "moveVertical(distance: int)"]] },
+        task: "**Beurteile**, ob Mias Objektkarte korrekt oder fehlerhaft ist. **Begründe** dein Urteil und gib bei jedem Fehler die richtige **Korrektur** an.",
+        concepts: [
+          ["`90.0` passt nicht zum Datentyp `int` (ganze Zahl) – richtig ist `xPosition = 90`", ["90[.,]0", "nachkomma", "komma", "double", "\\bint\\b", "ganze\\s*zahl", "ganzzahl", "xposition=90\\b"]],
+          ["`blue` ist Text (`String`) und braucht **Anführungszeichen**: `color = \"blue\"`", ["anfuehrungs", "\"blue\"", "string", "\\btext", "gaensefuess", "zeichenkette"]]],
+        model: "Die Objektkarte ist **fehlerhaft**: `xPosition` hat den Datentyp `int`, also eine ganze Zahl ohne Nachkommastelle – richtig ist `xPosition = 90` statt `90.0`. Außerdem ist `blue` ein Text (`String`) und braucht **Anführungszeichen**: `color = \"blue\"`." },
+      { id: "F2b", lbl: "b", part: "b", type: "judge", correct: "fehlerhaft",
+        q: "Tom hat den Zustand des Objekts `spitze` aus dem Objektinspektor in eine Objektkarte übersetzt.",
+        scene: { insp: ["spitze", "Triangle", [["int height", "40"], ["int width", "40"], ["int xPosition", "110"], ["int yPosition", "100"], ["String color", '"red"'], ["boolean isVisible", "true"]]],
+                 card: ["Triangle : spitze", ["height = 40", "width = 40", "xPosition = 110", "yPosition = 100", 'color = "red"', "isVisible = correct"], ["changeColor(newColor: String)", "moveHorizontal(distance: int)"]] },
         task: "**Beurteile**, ob Toms Objektkarte korrekt oder fehlerhaft ist. **Begründe** dein Urteil und gib bei jedem Fehler die richtige **Korrektur** an.",
         concepts: [
-          ["`size: int` ist ein **Datentyp** – auf die Objektkarte gehört der **Wert** `size = 40`", ["size=40", "datentyp", "kein\\w*\\s+wert", "wert\\s+fehlt", "statt\\s+(des\\s+|dem\\s+)?wert", "\\b40\\b"]],
-          ["`blue` ist Text und braucht **Anführungszeichen**: `color = \"blue\"`", ["anfuehrungs", "\"blue\"", "string", "\\btext", "gaensefuess", "zeichenkette"]]],
-        model: "Die Objektkarte ist **fehlerhaft**: `size: int` ist ein **Datentyp** – auf die Objektkarte gehört der **Wert**, also `size = 40`. Außerdem ist `blue` ein Text (`String`) und braucht **Anführungszeichen**: `color = \"blue\"`." } ] },
+          ["Der **Kopf** ist vertauscht – richtig ist `spitze : Triangle` (erst das Objekt, dann die Klasse)", ["kopf", "reihenfolge", "vertausch", "umgedreht", "falsch\\s*(herum|rum)", "objekt\\w*\\s+(zuerst|vorne|vor|links)", "zuerst\\s+(das\\s+)?objekt", "spitze:triangle"]],
+          ["`isVisible` hat den Datentyp `boolean` – möglich sind nur `true` oder `false`, also `isVisible = true`", ["boolean", "\\btrue\\b", "\\bfalse\\b", "wahr", "isvisible=true", "wahrheitswert"]]],
+        model: "Die Objektkarte ist **fehlerhaft**: Der **Kopf** ist vertauscht – richtig ist `spitze : Triangle`, erst das Objekt, dann die Klasse. Außerdem hat `isVisible` den Datentyp `boolean`; erlaubt sind nur `true` und `false`. Richtig ist `isVisible = true` statt `correct`." } ] },
     { area: 2, parts: [
-      { id: "F3", part: "b", type: "judge", correct: "fehlerhaft",
+      { id: "F3a", lbl: "a", part: "b", type: "judge", correct: "korrekt",
+        q: "Emil möchte das Fenster von `xPosition = 100` nach `xPosition = 60` verschieben. Dazu schreibt er folgende Nachricht:",
+        quote: "`fenster.moveHorizontal(-40);`",
+        task: "**Beurteile**, ob Emils Nachricht korrekt oder fehlerhaft ist, und **begründe** dein Urteil mithilfe einer Rechnung.",
+        concepts: [
+          ["`moveHorizontal` verschiebt **um** einen Betrag, nicht **auf** eine Position", UM],
+          ["Nötig ist **Ziel − Start = 60 − 100 = −40**", ["-40", "60\\s*-\\s*100", "ziel\\s*-\\s*start", "differenz", "100\\s*-\\s*40\\s*=\\s*60", "100-40"]],
+          ["Ein **negativer** Wert verschiebt nach **links**; `100 + (−40) = 60`", ["links", "negativ", "minus", "100\\s*\\+\\s*\\(?-40", "=\\s*60\\b"]]],
+        model: "Die Nachricht ist **korrekt**: `moveHorizontal` verschiebt **um** einen Betrag. Nötig ist **Ziel − Start = 60 − 100 = −40**. Ein negativer Wert verschiebt nach links: `100 + (−40) = 60`." },
+      { id: "F3b", lbl: "b", part: "b", type: "judge", correct: "fehlerhaft",
         q: "Jonas möchte die Spitze von `yPosition = 15` nach `yPosition = 100` verschieben. Dazu schreibt er folgende Nachricht:",
         quote: "`spitze.moveVertical(100);`",
         task: "**Beurteile**, ob Jonas’ Nachricht korrekt oder fehlerhaft ist, und **begründe** dein Urteil mithilfe einer Rechnung.",
@@ -1697,7 +1726,7 @@ function grade(test, answers){
   test.items.forEach(it => it.parts.forEach(p => { const g = gradePart(p, answers[p.id]); parts[p.id] = g; sum += g.score; n++; }));
   // Pre: startklar nur, wenn a UND b vollständig richtig sind · Final: wenn die Beurteilung richtig ist
   const status = test.items.map(it => it.parts.every(p => parts[p.id].ok) ? "startklar" : "wartung");
-  const judged = test.items.map(it => { const p = it.parts.find(x => x.part === "b"); return parts[p.id].ok; });
+  const judged = test.items.map(it => it.parts.filter(x => x.part === "b").every(p => parts[p.id].ok));
   return { parts, points: Math.round(sum * 100), max: n * 100, status, judged };
 }
 
@@ -1706,8 +1735,8 @@ function inspHTML([obj, cls, rows]){
   return `<div class="insp"><div class="ih">BlueJ: Objektinspektor</div><div class="in"><span>${esc(obj)} : ${esc(cls)}</span></div>` +
     rows.map(([k, v]) => `<div class="ir"><span>private ${esc(k)}</span><span>${esc(v)}</span></div>`).join("") + `</div>`;
 }
-function cardHTML([head, rows, note]){
-  return `<div class="karte ok"><div class="h"><u>${esc(head)}</u></div><div class="a">${rows.map(esc).join("<br>")}</div><div class="note">${esc(note)}</div></div>`;
+function cardHTML([head, rows, methods]){
+  return `<div class="karte ok"><div class="h"><u>${esc(head)}</u></div><div class="a">${rows.map(esc).join("<br>")}</div><div style="line-height:1.9">${(methods || []).map(esc).join("<br>")}</div></div>`;
 }
 function kkHTML([name, attrs, methods]){
   return `<div class="karte"><div class="h">${esc(name)}</div><div class="a">${attrs.map(esc).join("<br>")}</div><div style="line-height:1.9">${methods.map(esc).join("<br>")}</div></div>`;
@@ -1867,7 +1896,7 @@ function renderStep(st){
 }
 
 function partForm(test, p, a){
-  const lab = test.key === "pre" ? `<span class="pl">${p.part})</span>` : "";
+  const lab = (test.key === "pre" || p.lbl) ? `<span class="pl">${p.lbl || p.part})</span>` : "";
   if (p.type === "match"){ const mx = mixed(p); return `<div class="q">${lab}${md(p.q)}</div><div class="matchgrid">` +
     mx.rows.map(([w]) => `<div><div class="w">${esc(w)}</div><select name="${p.id}_${w}">${opts(mx.options, a[w])}</select></div>`).join("") + `</div>`; }
   if (p.type === "types"){
@@ -1887,7 +1916,7 @@ function partForm(test, p, a){
     `<div class="q" style="margin-top:10px">${md(p.task)}</div>
      <div class="lab">Dein Urteil</div><div class="verdict" data-sel="${p.id}_v">` +
     VERDICTS.map(v => `<label class="opt${a.verdict === v ? " sel" : ""}"><input type="radio" name="${p.id}_v" value="${v}"${a.verdict === v ? " checked" : ""}><span>${v}</span></label>`).join("") + `</div>
-     <div class="lab">Deine Begründung</div>${test.key === "final" ? `<div class="advice">${md("**Achte auf eine vollständige Begründung:** Nenne das **Kriterium** (welche Regel bzw. welches Startkriterium gilt?), den **Beleg** (was steht in der Übersetzung, was ergibt deine Rechnung?) und die **Schlussfolgerung** (korrekt oder fehlerhaft – und warum?). Ist etwas fehlerhaft, gehört die **Korrektur** dazu. Antworte ausführlich und verwende alle Fachbegriffe, die du gelernt hast.")}</div>` : ""}
+     <div class="lab">Deine Begründung</div>${test.key === "final" && p.lbl !== "b" ? `<div class="advice">${md("**Achte auf eine vollständige Begründung:** Nenne das **Kriterium** (welche Regel bzw. welches Startkriterium gilt?), den **Beleg** (was steht in der Übersetzung, was ergibt deine Rechnung?) und die **Schlussfolgerung** (korrekt oder fehlerhaft – und warum?). Ist etwas fehlerhaft, gehört die **Korrektur** dazu. Antworte ausführlich und verwende alle Fachbegriffe, die du gelernt hast.")}</div>` : ""}
      <textarea name="${p.id}_text" maxlength="600" placeholder="${test.key === "final" ? "Kriterium – Beleg – Schlussfolgerung …" : "Die Übersetzung ist …, weil …"}">${esc(a.text || "")}</textarea>` +
     (p.fix ? `<div id="${p.id}_fixwrap" style="display:${fixShown ? "" : "none"}"><div class="lab">${esc(p.fix.q)}</div>
       <input type="text" class="codein" name="${p.id}_fix" value="${esc(a.fix || "")}" placeholder="${esc(p.fix.placeholder)}" autocapitalize="off" autocorrect="off" spellcheck="false"></div>` : "");
@@ -1941,7 +1970,7 @@ function showFeedback(test, done){
     <div class="hero"><div class="badge">${test.code}</div><div><h1>${esc(test.title)} · Auswertung</h1><div class="sub">Abgegeben um ${time} Uhr · Initialen <b class="mono">${esc(done.ini)}</b></div></div></div>
     <div class="card"><div class="score"><div class="big">${pct(g.points, g.max)} %</div><div>Gesamtergebnis<br><span class="hint" style="margin:0">${g.parts && Object.values(g.parts).filter(x => x.ok).length} von ${Object.keys(g.parts).length} Teilaufgaben vollständig gelöst</span></div></div>
       <div style="margin-top:10px">${AREAS.map(([a, n], i) => `<div class="statrow"><span><b>${a}</b> ${esc(n)}</span>${statusChip(g.status[i])}</div>`).join("")}</div>
-      <div class="hint">${test.key === "pre" ? "Status: Teil a (übersetzen) richtig und Teil b (Urteil, Begründung und – falls nötig – Korrektur) richtig → startklar. Ist in a oder b etwas falsch → Wartung nötig, dann startest du bei Basis." : "Status: Urteil richtig, Begründung enthält die wichtigsten Kernpunkte (von zwei beide, von drei mindestens zwei) und – falls nötig – richtig korrigiert → startklar."}</div></div>
+      <div class="hint">${test.key === "pre" ? "Status: Teil a (übersetzen) richtig und Teil b (Urteil, Begründung und – falls nötig – Korrektur) richtig → startklar. Ist in a oder b etwas falsch → Wartung nötig, dann startest du bei Basis." : "Status: Beide Beurteilungen eines Bereichs richtig (Urteil richtig, Begründung enthält die wichtigsten Kernpunkte – von zwei beide, von drei mindestens zwei – und falls nötig richtig korrigiert) → startklar."}</div></div>
     <h2 style="margin-top:26px">Lösungen und Rückmeldung</h2>`;
   test.items.forEach((it, i) => {
     const [ar, an] = AREAS[it.area];
@@ -1976,7 +2005,7 @@ function finalHints(ini, g){
     if (pg && !ok && before === "startklar") extra = " Im Pre-Flight-Check lief das schon – lies die Startkriterien noch einmal genau.";
     (ok ? good : work).push(`<li><b>${a} ${esc(n)}:</b> ${md(ok ? TIPS[i].good : TIPS[i].work)}${extra}</li>`);
   });
-  const reasonAvg = Math.round(100 * FINAL.items.reduce((s, it) => s + g.parts[it.parts[0].id].rScore, 0) / FINAL.items.length);
+  const fParts = FINAL.items.flatMap(it => it.parts); const reasonAvg = Math.round(100 * fParts.reduce((s, p) => s + g.parts[p.id].rScore, 0) / fParts.length);
   const cmp = pg ? `<p style="margin:0 0 8px">Pre-Flight-Check: <b>${pct(pg.points, pg.max)} %</b> · Final-Flight-Check: <b>${pct(g.points, g.max)} %</b> · Sicher beurteilt: vorher ${pg.judged.filter(Boolean).length} von 3, jetzt ${g.judged.filter(Boolean).length} von 3.</p>` : "";
   const style = reasonAvg >= 67 ? "Deine Begründungen nennen die wichtigen Fachbegriffe und Rechnungen – weiter so."
     : "Deine Begründungen werden stärker, wenn du immer **Kriterium – Beleg – Schlussfolgerung** nennst und Rechnungen ausschreibst (Satzmuster: **H2**).";
@@ -1989,7 +2018,7 @@ function finalHints(ini, g){
 function fbBox(ok, title, body){ return `<div class="fb ${ok ? "ok" : "no"}"><div class="t"><span class="ico">${ok ? "✓" : "✗"}</span>${title}</div>${body ? `<div class="sol">${body}</div>` : ""}</div>`; }
 function fbPart(test, p, a, g){
   a = a || {};
-  const lab = test.key === "pre" ? `<span class="pl">${p.part})</span>` : "";
+  const lab = (test.key === "pre" || p.lbl) ? `<span class="pl">${p.lbl || p.part})</span>` : "";
   let h = `<div class="part"><div class="q">${lab}${md(p.q)}</div>`;
   if (p.quote) h += `<div class="quote">${md(p.quote)}</div>`;
   if (p.ref) h += `<div style="max-width:470px;margin:6px 0 10px">${kkHTML(p.ref.cls)}</div>`;
@@ -2273,9 +2302,12 @@ function demoData(){
   const texts = { "1b": ["Beide sind Objekte derselben Klasse Circle und unterscheiden sich nur in den Attributwerten.", "Weil beide rund sind."],
     "2b": ["Der Kopf ist vertauscht, richtig ist fenster : Circle. 20.0 muss 20 sein, weil int.", "Die Farbe ist falsch geschrieben."],
     "3b": ["moveHorizontal verschiebt um 210, dann ist er bei 230. Richtig wäre 210 - 20 = 190.", "Er muss nach rechts."],
-    "F1": ["spitze ist ein Objekt, color ein Attribut und red der Wert.", "Das stimmt so."],
-    "F2": ["size: int ist ein Datentyp, auf die Objektkarte gehört size = 40. blue braucht Anführungszeichen.", "size ist falsch."],
-    "F3": ["moveVertical verschiebt um 100, also 15 + 100 = 115. Richtig: 100 - 15 = 85.", "Das ist zu weit."] };
+    "F1a": ["spitze ist ein Objekt, color ein Attribut und red der Wert.", "Das stimmt so."],
+    "F1b": ["color ist keine Methode, sondern ein Attribut. Eine Methode wäre changeColor.", "Gelb ist falsch."],
+    "F2a": ["90.0 passt nicht zu int, richtig 90. blue braucht Anführungszeichen.", "Die Farbe stimmt nicht."],
+    "F2b": ["Der Kopf ist vertauscht, richtig spitze : Triangle. isVisible ist boolean, also true.", "correct ist komisch."],
+    "F3a": ["moveHorizontal verschiebt um -40: Ziel - Start = 60 - 100 = -40, also nach links.", "Passt."],
+    "F3b": ["moveVertical verschiebt um 100, also 15 + 100 = 115. Richtig: 100 - 15 = 85.", "Das ist zu weit."] };
   names.forEach((n, i) => {
     ["pre", "final"].forEach((t, k) => {
       if (t === "final" && i === 11) return;
