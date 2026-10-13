@@ -1564,7 +1564,7 @@ const Store = {
    b-Teile: Urteil (korrekt/fehlerhaft) + Begründung als Freitext (Kernpunkt-Prüfung) + ggf. Korrektur als Nachricht */
 const UM = ["verschieb\\w*\\s+um\\b", "\\bum\\s+(\\d|den|einen|diesen|\\w+\\s+pixel)", "relativ", "addier", "dazu", "hinzu", "zusaetzlich", "nicht\\s+auf\\b", "nicht\\s+(die|eine)\\s+(ziel)?position", "betrag", "\\+"];
 const PRE = {
-  key: "pre", code: "D1", title: "Pre-Flight-Check", sub: "Eingangsdiagnose · Was kann ich schon?",
+  key: "pre", code: "D1", title: "Pre-Flight-Check", showScene: true, sub: "Eingangsdiagnose · Was kann ich schon?",
   intro: "Bearbeite die folgenden drei Aufgaben.",
   items: [
     { area: 0, parts: [
@@ -1585,17 +1585,17 @@ const PRE = {
       { id: "2a", part: "a", type: "types", q: "Ergänze in der Klassenkarte der Klasse `Circle` die fehlenden **Datentypen**.",
         options: ["int", "double", "boolean", "String"], cls: "Circle",
         fields: [["diameter", "int"], ["xPosition", null, "int"], ["color", "String"], ["isVisible", "boolean"]],
-        methods: [["changeColor(newColor: ", "String", ")"], ["moveVertical(distance: int)", null]],
+        methods: [["changeColor(newColor: ", "String", ")"], ["moveVertical(distanceV: int)", null]],
         expl: "`diameter: int` (ganze Zahl) · `color: String` (Text) · `isVisible: boolean` (wahr/falsch) · `changeColor(newColor: String)`" },
       { id: "2b", part: "b", type: "judge", correct: "fehlerhaft",
-        q: "Nele hat den Zustand des Objekts `fenster` aus dem Objektinspektor in eine Objektkarte übersetzt.",
-        scene: { insp: ["fenster", "Circle", [["int diameter", "20"], ["int xPosition", "100"], ["int yPosition", "150"], ["String color", '"yellow"'], ["boolean isVisible", "true"]]],
-                 card: ["Circle : fenster", ["diameter = 20.0", "xPosition = 100", "yPosition = 150", 'color = "yellow"', "isVisible = true"], ["makeVisible()", "changeSize(newDiameter: int)"]] },
+        q: "Nele hat den Zustand des Objekts `rumpfOben` aus dem Objektinspektor in eine Objektkarte übersetzt.",
+        scene: { insp: ["rumpfOben", "Square", [["int size", "40"], ["int xPosition", "90"], ["int yPosition", "140"], ["String color", '"blue"'], ["boolean isVisible", "true"]]],
+                 card: ["Square : rumpfOben", ["size = 40.0", "xPosition = 90", "yPosition = 140", 'color = "blue"', "isVisible = true"], ["makeVisible()", "changeSize(newSize: int)"]] },
         task: "**Beurteile**, ob Neles Objektkarte korrekt oder fehlerhaft ist. **Begründe** dein Urteil und gib bei jedem Fehler die richtige **Korrektur** an.",
         concepts: [
-          ["Der **Kopf** ist vertauscht – richtig ist `fenster : Circle` (erst das Objekt, dann die Klasse)", ["kopf", "reihenfolge", "vertausch", "umgedreht", "falsch\\s*(herum|rum)", "objekt\\w*\\s+(zuerst|vorne|vor|links|first)", "zuerst\\s+(das\\s+)?objekt", "fenster:circle"]],
-          ["`20.0` passt nicht zum Datentyp `int` – richtig ist `20`", ["20[.,]0", "nachkomma", "komma", "double", "\\bint\\b", "ganze\\s*zahl", "ganzzahl"]]],
-        model: "Die Objektkarte ist **fehlerhaft**: Der **Kopf** ist vertauscht – richtig ist `fenster : Circle`, erst das Objekt, dann die Klasse. Außerdem passt `20.0` nicht zum Datentyp `int`; richtig ist `diameter = 20`." } ] },
+          ["Der **Kopf** ist vertauscht – richtig ist `rumpfOben : Square` (erst das Objekt, dann die Klasse)", ["kopf", "reihenfolge", "vertausch", "umgedreht", "falsch\\s*(herum|rum)", "objekt\\w*\\s+(zuerst|vorne|vor|links|first)", "zuerst\\s+(das\\s+)?objekt", "rumpfoben:square"]],
+          ["`40.0` passt nicht zum Datentyp `int` – richtig ist `size = 40`", ["40[.,]0", "nachkomma", "komma", "double", "\\bint\\b", "ganze\\s*zahl", "ganzzahl", "size=40\\b"]]],
+        model: "Die Objektkarte ist **fehlerhaft**: Der **Kopf** ist vertauscht – richtig ist `rumpfOben : Square`, erst das Objekt, dann die Klasse. Außerdem passt `40.0` nicht zum Datentyp `int`; richtig ist `size = 40`." } ] },
     { area: 2, parts: [
       { id: "3a", part: "a", type: "code", q: "Der Mond hat die Position `yPosition = 60` und soll um **30 Pixel nach oben** verschoben werden. Schreibe die passende **Nachricht** an das Objekt `mond` in Punktnotation auf.",
         expect: "mond.moveVertical(-30)", placeholder: "objekt.methode(parameter);",
@@ -1622,7 +1622,7 @@ const FINAL = {
         quote: "„Das Objekt `spitze` hat das Attribut `color` mit dem Wert `\"red\"`.“",
         ref: { lead: "Zum Vergleich siehst du die Klassenkarte der Klasse `Triangle`:",
                cls: ["Triangle", ["height: int", "width: int", "xPosition: int", "yPosition: int", "color: String", "isVisible: boolean"],
-                     ["makeVisible()", "moveHorizontal(distance: int)", "moveVertical(distance: int)", "changeSize(newHeight: int, newWidth: int)", "changeColor(newColor: String)"]] },
+                     ["makeVisible()", "moveHorizontal(distanceH: int)", "moveVertical(distanceV: int)", "changeSize(newHeight: int, newWidth: int)", "changeColor(newColor: String)"]] },
         task: "**Beurteile**, ob Leas Übersetzung korrekt oder fehlerhaft ist, und **begründe** dein Urteil fachlich.",
         concepts: [
           ["`spitze` ist ein **Objekt** (der Klasse `Triangle`)", ["spitze\\W+(\\w+\\W+){0,3}objekt", "objekt\\W+(\\w+\\W+){0,2}spitze", "triangle"]],
@@ -1634,7 +1634,7 @@ const FINAL = {
         quote: "„Das Objekt `fenster` hat die Methode `color` mit dem Wert `\"yellow\"`.“",
         ref: { lead: "Zum Vergleich siehst du die Klassenkarte der Klasse `Circle`:",
                cls: ["Circle", ["diameter: int", "xPosition: int", "yPosition: int", "color: String", "isVisible: boolean"],
-                     ["makeVisible()", "moveHorizontal(distance: int)", "moveVertical(distance: int)", "changeSize(newDiameter: int)", "changeColor(newColor: String)"]] },
+                     ["makeVisible()", "moveHorizontal(distanceH: int)", "moveVertical(distanceV: int)", "changeSize(newDiameter: int)", "changeColor(newColor: String)"]] },
         task: "**Beurteile**, ob Max’ Übersetzung korrekt oder fehlerhaft ist. **Begründe** dein Urteil und gib die richtige **Korrektur** an.",
         concepts: [
           ["`color` ist keine Methode, sondern ein **Attribut** (es beschreibt den **Zustand**)", ["color\\W+(\\w+\\W+){0,4}attribut", "attribut\\w*\\W+(\\w+\\W+){0,2}color", "kein\\w*\\s+methode", "nicht\\s+(\\w+\\s+){0,2}methode", "statt\\s+(der\\s+)?methode", "zustand"]],
@@ -1644,7 +1644,7 @@ const FINAL = {
       { id: "F2a", lbl: "a", part: "b", type: "judge", correct: "fehlerhaft",
         q: "Mia hat den Zustand des Objekts `rumpfUnten` aus dem Objektinspektor in eine Objektkarte übersetzt.",
         scene: { insp: ["rumpfUnten", "Square", [["int size", "40"], ["int xPosition", "90"], ["int yPosition", "180"], ["String color", '"blue"'], ["boolean isVisible", "true"]]],
-                 card: ["rumpfUnten : Square", ["size = 40", "xPosition = 90.0", "yPosition = 180", "color = blue", "isVisible = true"], ["makeVisible()", "moveVertical(distance: int)"]] },
+                 card: ["rumpfUnten : Square", ["size = 40", "xPosition = 90.0", "yPosition = 180", "color = blue", "isVisible = true"], ["makeVisible()", "moveVertical(distanceV: int)"]] },
         task: "**Beurteile**, ob Mias Objektkarte korrekt oder fehlerhaft ist. **Begründe** dein Urteil und gib bei jedem Fehler die richtige **Korrektur** an.",
         concepts: [
           ["`90.0` passt nicht zum Datentyp `int` (ganze Zahl) – richtig ist `xPosition = 90`", ["90[.,]0", "nachkomma", "komma", "double", "\\bint\\b", "ganze\\s*zahl", "ganzzahl", "xposition=90\\b"]],
@@ -1653,7 +1653,7 @@ const FINAL = {
       { id: "F2b", lbl: "b", part: "b", type: "judge", correct: "fehlerhaft",
         q: "Tom hat den Zustand des Objekts `spitze` aus dem Objektinspektor in eine Objektkarte übersetzt.",
         scene: { insp: ["spitze", "Triangle", [["int height", "40"], ["int width", "40"], ["int xPosition", "110"], ["int yPosition", "100"], ["String color", '"red"'], ["boolean isVisible", "true"]]],
-                 card: ["Triangle : spitze", ["height = 40", "width = 40", "xPosition = 110", "yPosition = 100", 'color = "red"', "isVisible = correct"], ["changeColor(newColor: String)", "moveHorizontal(distance: int)"]] },
+                 card: ["Triangle : spitze", ["height = 40", "width = 40", "xPosition = 110", "yPosition = 100", 'color = "red"', "isVisible = correct"], ["changeColor(newColor: String)", "moveHorizontal(distanceH: int)"]] },
         task: "**Beurteile**, ob Toms Objektkarte korrekt oder fehlerhaft ist. **Begründe** dein Urteil und gib bei jedem Fehler die richtige **Korrektur** an.",
         concepts: [
           ["Der **Kopf** ist vertauscht – richtig ist `spitze : Triangle` (erst das Objekt, dann die Klasse)", ["kopf", "reihenfolge", "vertausch", "umgedreht", "falsch\\s*(herum|rum)", "objekt\\w*\\s+(zuerst|vorne|vor|links)", "zuerst\\s+(das\\s+)?objekt", "spitze:triangle"]],
@@ -1668,6 +1668,7 @@ const FINAL = {
           ["`moveHorizontal` verschiebt **um** einen Betrag, nicht **auf** eine Position", UM],
           ["Nötig ist **Ziel − Start = 60 − 100 = −40**", ["-40", "60\\s*-\\s*100", "ziel\\s*-\\s*start", "differenz", "100\\s*-\\s*40\\s*=\\s*60", "100-40"]],
           ["Ein **negativer** Wert verschiebt nach **links**; `100 + (−40) = 60`", ["links", "negativ", "minus", "100\\s*\\+\\s*\\(?-40", "=\\s*60\\b"]]],
+        fix: { q: "Schreibe die korrigierte Nachricht auf.", expect: "fenster.moveHorizontal(-40)", placeholder: "fenster.…" },
         model: "Die Nachricht ist **korrekt**: `moveHorizontal` verschiebt **um** einen Betrag. Nötig ist **Ziel − Start = 60 − 100 = −40**. Ein negativer Wert verschiebt nach links: `100 + (−40) = 60`." },
       { id: "F3b", lbl: "b", part: "b", type: "judge", correct: "fehlerhaft",
         q: "Jonas möchte die Spitze von `yPosition = 15` nach `yPosition = 100` verschieben. Dazu schreibt er folgende Nachricht:",
@@ -1850,7 +1851,7 @@ function finalGate(){
     <div class="card" style="border-left:6px solid var(--taupe)"><h2>Kurzer Check vor dem Start</h2>
       <p style="font-size:19px;margin:12px 0 6px"><b>Hast du alle Übungen bearbeitet?</b></p>
       <p class="hint" style="margin:0 0 16px">Damit sind deine Übungsbereiche Ü1–Ü3 gemeint: Basis (falls nötig) und Plus. Hast du sie mit den Lösungen an der Lösungsstation verglichen und ins Logbuch eingetragen?</p>
-      <div style="display:flex;gap:12px;flex-wrap:wrap"><button class="btn" id="yes">Ja, weiter zum Test</button><button class="btn sec" id="no">Nein, zurück zum Hauptmenü</button></div></div></div>`;
+      <div style="display:flex;gap:12px;flex-wrap:wrap"><button class="btn" id="yes">Ja, weiter zum Check</button><button class="btn sec" id="no">Nein, zurück zum Hauptmenü</button></div></div></div>`;
   document.getElementById("yes").addEventListener("click", () => { openTest.confirmed = true; openTest(FINAL); });
   document.getElementById("no").addEventListener("click", menu);
 }
@@ -1865,7 +1866,7 @@ function renderStep(st){
     <form id="f" autocomplete="off"><div class="card item"><div class="itemhead"><span class="num">${st.step + 1}</span><span class="area">${ar} · ${esc(an)}</span></div>
       ${it.parts.map(p => `<div class="part" data-part="${p.id}">${partForm(test, p, st.ans[p.id] || {})}</div>`).join("")}</div>
       <div class="nav"><button type="button" class="btn sec" id="back" ${st.step === 0 ? "style=\"visibility:hidden\"" : ""}>← Zurück</button>
-        <button type="submit" class="btn" id="next">${st.step === n - 1 ? "Test abgeben" : "Weiter →"}</button></div>
+        <button type="submit" class="btn" id="next">${st.step === n - 1 ? "Check abgeben" : "Weiter →"}</button></div>
       <div id="msg" class="hint" style="text-align:right"></div></form>
     <div class="foot"><a href="#" id="tomenu">Zum Hauptmenü (Antworten bleiben gespeichert)</a></div></div>`;
   window.scrollTo(0, 0);
@@ -1891,7 +1892,7 @@ function renderStep(st){
       document.getElementById("msg").innerHTML = `<span class="err">Bitte bearbeite zuerst alle markierten Stellen.</span>`; return;
     }
     if (st.step < n - 1){ st.step++; renderStep(st); return; }
-    if (confirm("Test jetzt abgeben? Danach kannst du nichts mehr ändern.")) submitTest(st);
+    if (confirm("Check jetzt abgeben? Danach kannst du nichts mehr ändern.")) submitTest(st);
   });
 }
 
@@ -2168,7 +2169,7 @@ function overview(st){
       <td class="noprint"><button class="linkbtn" data-open="${esc(s.ini)}">${T.open[s.ini] ? "schließen" : "Details"}</button></td></tr>`;
     if (T.open[s.ini]) h += `<tr class="det"><td></td><td colspan="8">${details(s)}</td></tr>`;
   });
-  h += `</tbody></table></div><p class="hint">Gewertet wird je Test die <b>erste</b> Abgabe pro Initialen. „Basis + Plus“ = Status „Wartung nötig“ im Pre-Flight-Check (Fehler in Teil a oder b).</p>`;
+  h += `</tbody></table></div><p class="hint">Gewertet wird je Check die <b>erste</b> Abgabe pro Initialen. „Basis + Plus“ = Status „Wartung nötig“ im Pre-Flight-Check (Fehler in Teil a oder b).</p>`;
   return h;
 }
 function details(s){
@@ -2300,7 +2301,7 @@ function demoData(){
   const rnd = (i, k) => ((i * 7 + k * 13) % 10) / 10;
   const all = ls.get(DEMO_KEY) || [];
   const texts = { "1b": ["Beide sind Objekte derselben Klasse Circle und unterscheiden sich nur in den Attributwerten.", "Weil beide rund sind."],
-    "2b": ["Der Kopf ist vertauscht, richtig ist fenster : Circle. 20.0 muss 20 sein, weil int.", "Die Farbe ist falsch geschrieben."],
+    "2b": ["Der Kopf ist vertauscht, richtig ist rumpfOben : Square. 40.0 muss 40 sein, weil int.", "Die Farbe ist falsch geschrieben."],
     "3b": ["moveHorizontal verschiebt um 210, dann ist er bei 230. Richtig wäre 210 - 20 = 190.", "Er muss nach rechts."],
     "F1a": ["spitze ist ein Objekt, color ein Attribut und red der Wert.", "Das stimmt so."],
     "F1b": ["color ist keine Methode, sondern ein Attribut. Eine Methode wäre changeColor.", "Gelb ist falsch."],
