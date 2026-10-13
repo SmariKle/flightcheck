@@ -1,0 +1,2300 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Flight-Check · Houston, wir haben ein Übersetzungsproblem!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+/* =====================================================================
+   EINSTELLUNGEN – nur diese zwei Zeilen musst du nach der Einrichtung
+   der Datenbank (Supabase) ausfüllen. Bleiben sie leer, läuft die App
+   im DEMO-MODUS: Ergebnisse werden nur auf diesem Gerät gespeichert.
+   ===================================================================== */
+window.FLIGHTCHECK_CONFIG = {
+  SUPABASE_URL: "https://rchchxycoubewfzkzeop.supabase.co",
+  SUPABASE_KEY: "sb_publishable_uEBT4QajHW4Sd4hs54HaIg_e-_u8U03"   // nur der öffentliche „publishable“-Schlüssel – NIE den secret key eintragen!
+};
+</script>
+<style>
+:root{
+  --ink:#1c2431; --muted:#5d6676; --faint:#8b93a1; --rule:#d5dae1; --bg:#f3f5f7; --card:#ffffff;
+  --slate:#5d7889; --slate-d:#3b5361; --tint:#e9eff3; --taupe:#a59985; --taupe-t:#f4f1ec;
+  --ba:#2e8a57; --ba-t:#e4f3ea; --pl:#d9771c; --pl-t:#fcebd8; --zu:#7a4fa3;
+  --ok:#22764a; --ok-t:#e3f3e9; --no:#b3261e; --no-t:#fbe7e5;
+  --pre:#b27a2a; --fin:#1f6fb0;
+  --r:12px;
+}
+*{ box-sizing:border-box; }
+html,body{ margin:0; background:var(--bg); color:var(--ink); }
+body{ font-family:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif; font-size:17px; line-height:1.5; -webkit-text-size-adjust:100%; }
+.mono, code, .code{ font-family:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace; }
+code{ background:#eef0f3; border:1px solid #dfe3e8; border-radius:5px; padding:0 .3em; font-size:.92em; white-space:nowrap; }
+h1,h2,h3{ font-family:'IBM Plex Mono',ui-monospace,monospace; text-transform:uppercase; letter-spacing:.02em; margin:0; }
+h1{ font-size:clamp(22px,4vw,30px); line-height:1.2; }
+h2{ font-size:18px; color:var(--slate-d); }
+h3{ font-size:15px; color:var(--slate-d); }
+a{ color:var(--slate-d); }
+button{ font:inherit; cursor:pointer; }
+.wrap{ max-width:900px; margin:0 auto; padding:16px 16px 60px; }
+.wrap.wide{ max-width:1180px; }
+.top{ background:var(--slate-d); color:#fff; }
+.top .wrap{ padding-top:10px; padding-bottom:10px; display:flex; justify-content:space-between; gap:12px; align-items:center; font-family:'IBM Plex Mono',monospace; font-size:13px; letter-spacing:.04em; text-transform:uppercase; }
+.top .wrap span:last-child{ opacity:.8; text-align:right; }
+.demo{ background:#fff4d6; color:#6b4e00; font-size:14px; text-align:center; padding:6px 12px; border-bottom:1px solid #f0dc9d; }
+.card{ background:var(--card); border:1px solid var(--rule); border-radius:var(--r); padding:18px; margin:14px 0; }
+.hero{ display:flex; gap:16px; align-items:center; margin:18px 0 6px; }
+.badge{ flex:none; width:58px; height:58px; border-radius:12px; background:var(--slate); color:#fff; display:flex; align-items:center; justify-content:center; font:700 20px 'IBM Plex Mono',monospace; }
+.sub{ color:var(--muted); font-size:15px; margin-top:2px; }
+.btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; border:0; border-radius:10px; padding:13px 20px; background:var(--slate-d); color:#fff; font-weight:600; min-height:48px; text-decoration:none; }
+.btn:hover{ filter:brightness(1.08); }
+.btn.sec{ background:#fff; color:var(--slate-d); border:1.5px solid var(--slate-d); }
+.btn.warn{ background:#fff; color:var(--no); border:1.5px solid var(--no); }
+.btn.small{ min-height:38px; padding:7px 13px; font-size:15px; }
+.btn:disabled{ opacity:.45; cursor:not-allowed; }
+input[type=text], input[type=password]{ font:inherit; width:100%; padding:12px 14px; border:1.5px solid #aab3be; border-radius:10px; background:#fff; min-height:48px; }
+input.codein{ font-family:'IBM Plex Mono',monospace; font-size:16px; }
+input:focus, select:focus{ outline:3px solid #b9cfe0; border-color:var(--slate-d); }
+select{ font:inherit; font-size:16px; padding:8px 10px; border:1.5px solid #aab3be; border-radius:8px; background:#fff; min-height:44px; max-width:100%; }
+label.opt{ display:flex; gap:12px; align-items:flex-start; padding:11px 13px; border:1.5px solid var(--rule); border-radius:10px; margin:7px 0; background:#fff; cursor:pointer; }
+label.opt:hover{ border-color:#aab3be; }
+label.opt input{ width:22px; height:22px; margin:1px 0 0; flex:none; accent-color:var(--slate-d); }
+label.opt.sel{ border-color:var(--slate-d); background:var(--tint); }
+.verdict{ display:flex; gap:10px; flex-wrap:wrap; margin:6px 0 4px; }
+.verdict label.opt{ margin:0; min-width:150px; font-weight:600; }
+textarea{ font:inherit; width:100%; min-height:70px; padding:10px 12px; border:1.5px solid #aab3be; border-radius:10px; }
+.item{ border-left:6px solid var(--slate); }
+.itemhead{ display:flex; align-items:center; gap:12px; margin-bottom:6px; }
+.num{ flex:none; width:36px; height:36px; border-radius:50%; background:var(--slate); color:#fff; display:flex; align-items:center; justify-content:center; font:700 16px 'IBM Plex Mono',monospace; }
+.area{ font:600 13px 'IBM Plex Mono',monospace; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
+.part{ margin-top:16px; padding-top:14px; border-top:1px dashed var(--rule); }
+.part:first-of-type{ border-top:0; padding-top:4px; }
+.pl{ font-weight:700; color:var(--slate-d); margin-right:6px; }
+.q{ margin:4px 0 10px; }
+.lab{ font-size:14px; font-weight:600; color:var(--muted); margin:12px 0 4px; text-transform:none; }
+.quote{ background:var(--taupe-t); border-left:5px solid var(--taupe); border-radius:8px; padding:10px 14px; margin:8px 0 12px; }
+.grid2{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px; align-items:start; }
+.matchgrid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:10px; }
+.matchgrid > div{ border:1.5px solid var(--rule); border-radius:10px; padding:10px; text-align:center; background:#fff; }
+.matchgrid .w{ font:600 17px 'IBM Plex Mono',monospace; margin-bottom:6px; }
+.matchgrid select{ width:100%; }
+/* BlueJ-Bausteine */
+.insp{ border:1.5px solid #4a5160; border-radius:8px; background:#f4f5f7; font:14px 'IBM Plex Mono',monospace; overflow:hidden; }
+.insp .ih{ background:#dfe3e9; font:12px 'IBM Plex Sans',sans-serif; padding:4px 10px; color:#4a5160; }
+.insp .in{ padding:8px 10px 4px; } .insp .in span{ background:#c4473f; color:#fff; border-radius:6px; padding:2px 10px; }
+.insp .ir{ display:flex; justify-content:space-between; gap:8px; padding:4px 10px; border-top:1px solid #d3d8df; background:#fff; }
+.insp .ir span:first-child{ color:#4a5160; } .insp .ir span:last-child{ font-weight:600; }
+.karte{ border:2px solid #1c2431; background:#c8d1d9; font:15px 'IBM Plex Mono',monospace; }
+.karte.ok{ border-radius:12px; overflow:hidden; }
+.karte > div{ padding:6px 12px; } .karte .h{ text-align:center; border-bottom:2px solid #1c2431; }
+.karte.ok .h u{ text-underline-offset:3px; } .karte .a{ border-bottom:2px solid #1c2431; line-height:1.9; }
+.karte .note{ font:italic 12px 'IBM Plex Sans',sans-serif; color:#5d6676; }
+.karte select{ font:15px 'IBM Plex Mono',monospace; min-height:36px; padding:2px 6px; }
+.codebox{ background:#f5f6f8; border:1px solid #e0e3e8; border-left:5px solid var(--slate); border-radius:8px; padding:10px 14px; font:15px 'IBM Plex Mono',monospace; }
+.hint{ font-size:14px; color:var(--muted); margin-top:6px; }
+.err{ color:var(--no); font-weight:600; }
+.missing{ outline:3px solid #f2b8b3; outline-offset:4px; border-radius:10px; }
+/* Feedback */
+.fb{ border-radius:10px; padding:10px 14px; margin:8px 0; }
+.fb.ok{ background:var(--ok-t); border:1.5px solid #9fd2b3; }
+.fb.no{ background:var(--no-t); border:1.5px solid #efb1ab; }
+.fb .t{ font-weight:700; display:flex; gap:8px; align-items:center; }
+.fb.ok .t{ color:var(--ok); } .fb.no .t{ color:var(--no); }
+.fb .sol{ margin-top:4px; }
+.ico{ display:inline-flex; width:24px; height:24px; border-radius:50%; align-items:center; justify-content:center; color:#fff; font-size:15px; font-weight:700; flex:none; }
+.ok .ico{ background:var(--ok); } .no .ico{ background:var(--no); }
+.expl{ background:var(--tint); border-radius:10px; padding:10px 14px; margin-top:10px; font-size:16px; }
+.status{ display:inline-flex; align-items:center; gap:6px; border-radius:999px; padding:3px 12px; font-weight:700; font-size:14px; white-space:nowrap; }
+.status.go{ background:var(--slate-d); color:#fff; } .status.wn{ background:#fff; color:var(--slate-d); border:1.5px solid var(--slate-d); }
+.score{ display:flex; gap:18px; align-items:center; flex-wrap:wrap; }
+.big{ font:700 44px 'IBM Plex Mono',monospace; color:var(--slate-d); line-height:1; }
+.statrow{ display:grid; grid-template-columns:1fr auto; gap:8px 14px; align-items:center; padding:8px 0; border-bottom:1px solid var(--rule); }
+.ticket{ border:3px solid var(--slate-d); border-radius:16px; overflow:hidden; background:#fff; margin:18px 0; }
+.ticket .th{ background:var(--slate-d); color:#fff; padding:12px 18px; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
+.ticket .th b{ font:700 20px 'IBM Plex Mono',monospace; letter-spacing:.04em; }
+.ticket .ini{ font:700 26px 'IBM Plex Mono',monospace; background:#fff; color:var(--slate-d); border-radius:8px; padding:2px 12px; }
+.ticket .tb{ padding:14px 18px; }
+.sheet{ display:flex; gap:12px; align-items:center; padding:10px 0; border-bottom:1px solid var(--rule); flex-wrap:wrap; }
+.sheet:last-child{ border-bottom:0; }
+.sheet .nm{ flex:1 1 220px; font-weight:600; }
+.chip{ display:inline-flex; align-items:center; gap:6px; color:#fff; border-radius:8px; padding:5px 12px; font:700 14px 'IBM Plex Mono',monospace; letter-spacing:.05em; }
+.chip.ba{ background:var(--ba); } .chip.pl{ background:var(--pl); } .chip.zu{ background:var(--zu); }
+.chip.off{ background:#fff; color:var(--faint); border:1.5px dashed #b8bfc8; font-weight:600; }
+.next{ background:var(--taupe-t); border-left:6px solid var(--taupe); border-radius:10px; padding:14px 18px; margin:16px 0; }
+.next b{ color:var(--slate-d); }
+ul.tips{ margin:6px 0 0; padding-left:20px; } ul.tips li{ margin:6px 0; }
+/* Startseite */
+.choices{ display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px; margin-top:16px; }
+.choice{ display:block; text-decoration:none; color:inherit; background:#fff; border:1.5px solid var(--rule); border-radius:var(--r); padding:18px; }
+.choice:hover{ border-color:var(--slate); }
+.choice b{ display:block; font:700 17px 'IBM Plex Mono',monospace; text-transform:uppercase; color:var(--slate-d); margin-bottom:4px; }
+/* Lehreransicht */
+.toolbar{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+.tabs{ display:flex; gap:6px; margin:18px 0 0; border-bottom:2px solid var(--rule); flex-wrap:wrap; }
+.tab{ border:0; background:none; padding:10px 16px; font:600 15px 'IBM Plex Mono',monospace; text-transform:uppercase; color:var(--muted); border-bottom:3px solid transparent; margin-bottom:-2px; }
+.tab.on{ color:var(--slate-d); border-bottom-color:var(--slate-d); }
+.tiles{ display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin:16px 0; }
+.tile{ background:#fff; border:1px solid var(--rule); border-radius:var(--r); padding:14px 16px; }
+.tile .v{ font:700 30px 'IBM Plex Mono',monospace; color:var(--ink); line-height:1.1; }
+.tile .k{ font-size:14px; color:var(--muted); }
+.tablewrap{ overflow-x:auto; background:#fff; border:1px solid var(--rule); border-radius:var(--r); }
+table.res{ width:100%; border-collapse:collapse; font-size:15px; min-width:860px; }
+table.res th{ text-align:left; font:600 12px 'IBM Plex Mono',monospace; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); background:#f7f8fa; padding:10px; border-bottom:1px solid var(--rule); white-space:nowrap; }
+table.res td{ padding:9px 10px; border-bottom:1px solid var(--rule); vertical-align:middle; }
+table.res tr.det td{ background:#fafbfc; }
+.pct{ display:flex; align-items:center; gap:8px; min-width:120px; }
+.pct .bar{ flex:1; height:8px; background:#e6e9ed; border-radius:4px; overflow:hidden; min-width:50px; }
+.pct .bar i{ display:block; height:100%; border-radius:4px; }
+.pct b{ font:600 14px 'IBM Plex Mono',monospace; min-width:42px; text-align:right; }
+.mini{ display:inline-flex; gap:4px; }
+.mini span{ font:700 12px 'IBM Plex Mono',monospace; border-radius:5px; padding:2px 6px; }
+.mini .go{ background:var(--slate-d); color:#fff; } .mini .wn{ border:1.5px solid var(--slate-d); color:var(--slate-d); }
+.mini .na{ color:var(--faint); border:1px dashed #c3c9d1; }
+.delta{ font:700 14px 'IBM Plex Mono',monospace; }
+.linkbtn{ background:none; border:0; color:var(--slate-d); text-decoration:underline; padding:4px; font-size:14px; }
+.detgrid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:14px; font-size:14px; }
+.detgrid h4{ margin:0 0 6px; font:700 13px 'IBM Plex Mono',monospace; text-transform:uppercase; color:var(--slate-d); }
+.dl{ display:grid; grid-template-columns:auto 1fr; gap:3px 10px; }
+.dl .y{ color:var(--ok); font-weight:700; } .dl .n{ color:var(--no); font-weight:700; }
+.free{ background:#fff; border:1px solid var(--rule); border-radius:8px; padding:6px 10px; margin:4px 0; font-style:italic; }
+.chartcard{ background:#fff; border:1px solid var(--rule); border-radius:var(--r); padding:16px; margin:16px 0; position:relative; }
+.legend{ display:flex; gap:18px; flex-wrap:wrap; font-size:14px; color:var(--muted); margin:6px 0 10px; align-items:center; }
+.legend i{ display:inline-block; width:12px; height:12px; border-radius:50%; margin-right:6px; vertical-align:-1px; }
+.tip{ position:absolute; pointer-events:none; background:#1c2431; color:#fff; font-size:13px; border-radius:8px; padding:8px 10px; line-height:1.4; display:none; z-index:5; white-space:nowrap; }
+.qrs{ display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; }
+.qr{ background:#fff; border:1px solid var(--rule); border-radius:var(--r); padding:18px; text-align:center; }
+.qr canvas{ width:100%; max-width:300px; height:auto; image-rendering:pixelated; }
+.qr .u{ font:13px 'IBM Plex Mono',monospace; word-break:break-all; color:var(--muted); }
+.empty{ text-align:center; color:var(--muted); padding:30px; }
+.foot{ text-align:center; color:var(--faint); font-size:13px; margin-top:30px; }
+.foot a{ color:var(--faint); }
+.corner{ position:fixed; right:4px; bottom:4px; width:36px; height:36px; border:0; background:transparent; color:#b8bfc8; opacity:.45; font-size:20px; line-height:1; z-index:20; }
+.corner:hover{ opacity:1; color:var(--slate-d); }
+.menu{ display:grid; gap:14px; margin-top:18px; }
+.menu .choice{ display:flex; justify-content:space-between; align-items:center; gap:14px; width:100%; text-align:left; font:inherit; color:inherit; cursor:pointer; padding:20px; flex-wrap:wrap; }
+.menu .choice.locked{ cursor:not-allowed; background:#f0f2f4; color:var(--faint); border-style:dashed; }
+.menu .choice.locked .badge{ background:#b8bfc8; }
+.menu .ch{ display:flex; gap:14px; align-items:center; flex:1 1 300px; }
+.menu .ct b{ display:block; font:700 18px 'IBM Plex Mono',monospace; text-transform:uppercase; color:inherit; margin-bottom:2px; }
+.menu .choice:not(.locked) .ct b{ color:var(--slate-d); }
+.badge.sm{ width:48px; height:48px; font-size:17px; border-radius:10px; }
+.dots{ display:flex; align-items:center; gap:8px; margin:14px 0 4px; }
+.dot{ width:32px; height:32px; border-radius:50%; border:2px solid var(--slate); color:var(--slate-d); display:flex; align-items:center; justify-content:center; font:700 14px 'IBM Plex Mono',monospace; background:#fff; }
+.dot.c{ background:var(--slate-d); border-color:var(--slate-d); color:#fff; } .dot.d{ background:var(--tint); }
+.nav{ display:flex; justify-content:space-between; gap:12px; margin-top:6px; }
+ul.concepts{ list-style:none; margin:8px 0 0; padding:0; } ul.concepts li{ margin:4px 0; } ul.concepts li.y{ color:var(--ok); } ul.concepts li.n{ color:#7a828e; }
+.free{ background:#fff; border:1px solid var(--rule); border-radius:8px; padding:6px 10px; margin:6px 0; }
+.scene{ border-left:6px solid var(--taupe); }
+.scenegrid{ display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,1fr); gap:16px; align-items:center; }
+@media (max-width:640px){ .scenegrid{ grid-template-columns:1fr; } }
+details.scenemini{ margin:10px 0 0; } details.scenemini summary{ cursor:pointer; color:var(--slate-d); font-weight:600; font-size:15px; padding:6px 0; }
+.advice{ background:var(--tint); border-left:4px solid var(--slate); border-radius:8px; padding:8px 12px; margin:2px 0 8px; font-size:15px; }
+@media print{ .noprint, .top, .demo, .tabs, .toolbar{ display:none !important; } body{ background:#fff; } .qr{ break-inside:avoid; border:0; } }
+</style>
+</head>
+<body>
+<div id="banner"></div>
+<div class="top"><div class="wrap"><span>GymNet · EF IF (Ros) · OOP</span><span>Houston, wir haben ein Übersetzungsproblem!</span></div></div>
+<main id="app"></main>
+
+<script>
+var QRLIB=(function(){var M={};function require(p){return M[p.replace('./','')];}
+M['QRMode']=(function(){var module={exports:{}};var exports=module.exports;
+module.exports = {
+    MODE_NUMBER :       1 << 0,
+    MODE_ALPHA_NUM :    1 << 1,
+    MODE_8BIT_BYTE :    1 << 2,
+    MODE_KANJI :        1 << 3
+};
+
+return module.exports;})();
+M['QRErrorCorrectLevel']=(function(){var module={exports:{}};var exports=module.exports;
+module.exports = {
+	L : 1,
+	M : 0,
+	Q : 3,
+	H : 2
+};
+
+
+return module.exports;})();
+M['QRMaskPattern']=(function(){var module={exports:{}};var exports=module.exports;
+module.exports = {
+	PATTERN000 : 0,
+	PATTERN001 : 1,
+	PATTERN010 : 2,
+	PATTERN011 : 3,
+	PATTERN100 : 4,
+	PATTERN101 : 5,
+	PATTERN110 : 6,
+	PATTERN111 : 7
+};
+
+return module.exports;})();
+M['QRMath']=(function(){var module={exports:{}};var exports=module.exports;
+var QRMath = {
+
+	glog : function(n) {
+	
+		if (n < 1) {
+			throw new Error("glog(" + n + ")");
+		}
+		
+		return QRMath.LOG_TABLE[n];
+	},
+	
+	gexp : function(n) {
+	
+		while (n < 0) {
+			n += 255;
+		}
+	
+		while (n >= 256) {
+			n -= 255;
+		}
+	
+		return QRMath.EXP_TABLE[n];
+	},
+	
+	EXP_TABLE : new Array(256),
+	
+	LOG_TABLE : new Array(256)
+
+};
+	
+for (var i = 0; i < 8; i++) {
+	QRMath.EXP_TABLE[i] = 1 << i;
+}
+for (var i = 8; i < 256; i++) {
+	QRMath.EXP_TABLE[i] = QRMath.EXP_TABLE[i - 4]
+		^ QRMath.EXP_TABLE[i - 5]
+		^ QRMath.EXP_TABLE[i - 6]
+		^ QRMath.EXP_TABLE[i - 8];
+}
+for (var i = 0; i < 255; i++) {
+	QRMath.LOG_TABLE[QRMath.EXP_TABLE[i] ] = i;
+}
+
+module.exports = QRMath;
+
+return module.exports;})();
+M['QRPolynomial']=(function(){var module={exports:{}};var exports=module.exports;
+var QRMath = require('./QRMath');
+
+function QRPolynomial(num, shift) {
+	if (num.length === undefined) {
+		throw new Error(num.length + "/" + shift);
+	}
+
+	var offset = 0;
+
+	while (offset < num.length && num[offset] === 0) {
+		offset++;
+	}
+
+	this.num = new Array(num.length - offset + shift);
+	for (var i = 0; i < num.length - offset; i++) {
+		this.num[i] = num[i + offset];
+	}
+}
+
+QRPolynomial.prototype = {
+
+	get : function(index) {
+		return this.num[index];
+	},
+	
+	getLength : function() {
+		return this.num.length;
+	},
+	
+	multiply : function(e) {
+	
+		var num = new Array(this.getLength() + e.getLength() - 1);
+	
+		for (var i = 0; i < this.getLength(); i++) {
+			for (var j = 0; j < e.getLength(); j++) {
+				num[i + j] ^= QRMath.gexp(QRMath.glog(this.get(i) ) + QRMath.glog(e.get(j) ) );
+			}
+		}
+	
+		return new QRPolynomial(num, 0);
+	},
+	
+	mod : function(e) {
+	
+		if (this.getLength() - e.getLength() < 0) {
+			return this;
+		}
+	
+		var ratio = QRMath.glog(this.get(0) ) - QRMath.glog(e.get(0) );
+	
+		var num = new Array(this.getLength() );
+		
+		for (var i = 0; i < this.getLength(); i++) {
+			num[i] = this.get(i);
+		}
+		
+		for (var x = 0; x < e.getLength(); x++) {
+			num[x] ^= QRMath.gexp(QRMath.glog(e.get(x) ) + ratio);
+		}
+	
+		// recursive call
+		return new QRPolynomial(num, 0).mod(e);
+	}
+};
+
+module.exports = QRPolynomial;
+
+return module.exports;})();
+M['QR8bitByte']=(function(){var module={exports:{}};var exports=module.exports;
+var QRMode = require('./QRMode');
+
+function QR8bitByte(data) {
+	this.mode = QRMode.MODE_8BIT_BYTE;
+	this.data = data;
+}
+
+QR8bitByte.prototype = {
+
+	getLength : function() {
+		return this.data.length;
+	},
+	
+	write : function(buffer) {
+		for (var i = 0; i < this.data.length; i++) {
+			// not JIS ...
+			buffer.put(this.data.charCodeAt(i), 8);
+		}
+	}
+};
+
+module.exports = QR8bitByte;
+
+return module.exports;})();
+M['QRBitBuffer']=(function(){var module={exports:{}};var exports=module.exports;
+function QRBitBuffer() {
+	this.buffer = [];
+	this.length = 0;
+}
+
+QRBitBuffer.prototype = {
+
+	get : function(index) {
+		var bufIndex = Math.floor(index / 8);
+		return ( (this.buffer[bufIndex] >>> (7 - index % 8) ) & 1) == 1;
+	},
+	
+	put : function(num, length) {
+		for (var i = 0; i < length; i++) {
+			this.putBit( ( (num >>> (length - i - 1) ) & 1) == 1);
+		}
+	},
+	
+	getLengthInBits : function() {
+		return this.length;
+	},
+	
+	putBit : function(bit) {
+	
+		var bufIndex = Math.floor(this.length / 8);
+		if (this.buffer.length <= bufIndex) {
+			this.buffer.push(0);
+		}
+	
+		if (bit) {
+			this.buffer[bufIndex] |= (0x80 >>> (this.length % 8) );
+		}
+	
+		this.length++;
+	}
+};
+
+module.exports = QRBitBuffer;
+
+return module.exports;})();
+M['QRRSBlock']=(function(){var module={exports:{}};var exports=module.exports;
+var QRErrorCorrectLevel = require('./QRErrorCorrectLevel');
+
+function QRRSBlock(totalCount, dataCount) {
+	this.totalCount = totalCount;
+	this.dataCount  = dataCount;
+}
+
+QRRSBlock.RS_BLOCK_TABLE = [
+
+	// L
+	// M
+	// Q
+	// H
+
+	// 1
+	[1, 26, 19],
+	[1, 26, 16],
+	[1, 26, 13],
+	[1, 26, 9],
+	
+	// 2
+	[1, 44, 34],
+	[1, 44, 28],
+	[1, 44, 22],
+	[1, 44, 16],
+
+	// 3
+	[1, 70, 55],
+	[1, 70, 44],
+	[2, 35, 17],
+	[2, 35, 13],
+
+	// 4		
+	[1, 100, 80],
+	[2, 50, 32],
+	[2, 50, 24],
+	[4, 25, 9],
+	
+	// 5
+	[1, 134, 108],
+	[2, 67, 43],
+	[2, 33, 15, 2, 34, 16],
+	[2, 33, 11, 2, 34, 12],
+	
+	// 6
+	[2, 86, 68],
+	[4, 43, 27],
+	[4, 43, 19],
+	[4, 43, 15],
+	
+	// 7		
+	[2, 98, 78],
+	[4, 49, 31],
+	[2, 32, 14, 4, 33, 15],
+	[4, 39, 13, 1, 40, 14],
+	
+	// 8
+	[2, 121, 97],
+	[2, 60, 38, 2, 61, 39],
+	[4, 40, 18, 2, 41, 19],
+	[4, 40, 14, 2, 41, 15],
+	
+	// 9
+	[2, 146, 116],
+	[3, 58, 36, 2, 59, 37],
+	[4, 36, 16, 4, 37, 17],
+	[4, 36, 12, 4, 37, 13],
+	
+	// 10		
+	[2, 86, 68, 2, 87, 69],
+	[4, 69, 43, 1, 70, 44],
+	[6, 43, 19, 2, 44, 20],
+	[6, 43, 15, 2, 44, 16],
+
+	// 11
+	[4, 101, 81],
+	[1, 80, 50, 4, 81, 51],
+	[4, 50, 22, 4, 51, 23],
+	[3, 36, 12, 8, 37, 13],
+
+	// 12
+	[2, 116, 92, 2, 117, 93],
+	[6, 58, 36, 2, 59, 37],
+	[4, 46, 20, 6, 47, 21],
+	[7, 42, 14, 4, 43, 15],
+
+	// 13
+	[4, 133, 107],
+	[8, 59, 37, 1, 60, 38],
+	[8, 44, 20, 4, 45, 21],
+	[12, 33, 11, 4, 34, 12],
+
+	// 14
+	[3, 145, 115, 1, 146, 116],
+	[4, 64, 40, 5, 65, 41],
+	[11, 36, 16, 5, 37, 17],
+	[11, 36, 12, 5, 37, 13],
+
+	// 15
+	[5, 109, 87, 1, 110, 88],
+	[5, 65, 41, 5, 66, 42],
+	[5, 54, 24, 7, 55, 25],
+	[11, 36, 12],
+
+	// 16
+	[5, 122, 98, 1, 123, 99],
+	[7, 73, 45, 3, 74, 46],
+	[15, 43, 19, 2, 44, 20],
+	[3, 45, 15, 13, 46, 16],
+
+	// 17
+	[1, 135, 107, 5, 136, 108],
+	[10, 74, 46, 1, 75, 47],
+	[1, 50, 22, 15, 51, 23],
+	[2, 42, 14, 17, 43, 15],
+
+	// 18
+	[5, 150, 120, 1, 151, 121],
+	[9, 69, 43, 4, 70, 44],
+	[17, 50, 22, 1, 51, 23],
+	[2, 42, 14, 19, 43, 15],
+
+	// 19
+	[3, 141, 113, 4, 142, 114],
+	[3, 70, 44, 11, 71, 45],
+	[17, 47, 21, 4, 48, 22],
+	[9, 39, 13, 16, 40, 14],
+
+	// 20
+	[3, 135, 107, 5, 136, 108],
+	[3, 67, 41, 13, 68, 42],
+	[15, 54, 24, 5, 55, 25],
+	[15, 43, 15, 10, 44, 16],
+
+	// 21
+	[4, 144, 116, 4, 145, 117],
+	[17, 68, 42],
+	[17, 50, 22, 6, 51, 23],
+	[19, 46, 16, 6, 47, 17],
+
+	// 22
+	[2, 139, 111, 7, 140, 112],
+	[17, 74, 46],
+	[7, 54, 24, 16, 55, 25],
+	[34, 37, 13],
+
+	// 23
+	[4, 151, 121, 5, 152, 122],
+	[4, 75, 47, 14, 76, 48],
+	[11, 54, 24, 14, 55, 25],
+	[16, 45, 15, 14, 46, 16],
+
+	// 24
+	[6, 147, 117, 4, 148, 118],
+	[6, 73, 45, 14, 74, 46],
+	[11, 54, 24, 16, 55, 25],
+	[30, 46, 16, 2, 47, 17],
+
+	// 25
+	[8, 132, 106, 4, 133, 107],
+	[8, 75, 47, 13, 76, 48],
+	[7, 54, 24, 22, 55, 25],
+	[22, 45, 15, 13, 46, 16],
+
+	// 26
+	[10, 142, 114, 2, 143, 115],
+	[19, 74, 46, 4, 75, 47],
+	[28, 50, 22, 6, 51, 23],
+	[33, 46, 16, 4, 47, 17],
+
+	// 27
+	[8, 152, 122, 4, 153, 123],
+	[22, 73, 45, 3, 74, 46],
+	[8, 53, 23, 26, 54, 24],
+	[12, 45, 15, 28, 46, 16],
+
+	// 28
+	[3, 147, 117, 10, 148, 118],
+	[3, 73, 45, 23, 74, 46],
+	[4, 54, 24, 31, 55, 25],
+	[11, 45, 15, 31, 46, 16],
+
+	// 29
+	[7, 146, 116, 7, 147, 117],
+	[21, 73, 45, 7, 74, 46],
+	[1, 53, 23, 37, 54, 24],
+	[19, 45, 15, 26, 46, 16],
+
+	// 30
+	[5, 145, 115, 10, 146, 116],
+	[19, 75, 47, 10, 76, 48],
+	[15, 54, 24, 25, 55, 25],
+	[23, 45, 15, 25, 46, 16],
+
+	// 31
+	[13, 145, 115, 3, 146, 116],
+	[2, 74, 46, 29, 75, 47],
+	[42, 54, 24, 1, 55, 25],
+	[23, 45, 15, 28, 46, 16],
+
+	// 32
+	[17, 145, 115],
+	[10, 74, 46, 23, 75, 47],
+	[10, 54, 24, 35, 55, 25],
+	[19, 45, 15, 35, 46, 16],
+
+	// 33
+	[17, 145, 115, 1, 146, 116],
+	[14, 74, 46, 21, 75, 47],
+	[29, 54, 24, 19, 55, 25],
+	[11, 45, 15, 46, 46, 16],
+
+	// 34
+	[13, 145, 115, 6, 146, 116],
+	[14, 74, 46, 23, 75, 47],
+	[44, 54, 24, 7, 55, 25],
+	[59, 46, 16, 1, 47, 17],
+
+	// 35
+	[12, 151, 121, 7, 152, 122],
+	[12, 75, 47, 26, 76, 48],
+	[39, 54, 24, 14, 55, 25],
+	[22, 45, 15, 41, 46, 16],
+
+	// 36
+	[6, 151, 121, 14, 152, 122],
+	[6, 75, 47, 34, 76, 48],
+	[46, 54, 24, 10, 55, 25],
+	[2, 45, 15, 64, 46, 16],
+
+	// 37
+	[17, 152, 122, 4, 153, 123],
+	[29, 74, 46, 14, 75, 47],
+	[49, 54, 24, 10, 55, 25],
+	[24, 45, 15, 46, 46, 16],
+
+	// 38
+	[4, 152, 122, 18, 153, 123],
+	[13, 74, 46, 32, 75, 47],
+	[48, 54, 24, 14, 55, 25],
+	[42, 45, 15, 32, 46, 16],
+
+	// 39
+	[20, 147, 117, 4, 148, 118],
+	[40, 75, 47, 7, 76, 48],
+	[43, 54, 24, 22, 55, 25],
+	[10, 45, 15, 67, 46, 16],
+
+	// 40
+	[19, 148, 118, 6, 149, 119],
+	[18, 75, 47, 31, 76, 48],
+	[34, 54, 24, 34, 55, 25],
+	[20, 45, 15, 61, 46, 16]
+];
+
+QRRSBlock.getRSBlocks = function(typeNumber, errorCorrectLevel) {
+	
+	var rsBlock = QRRSBlock.getRsBlockTable(typeNumber, errorCorrectLevel);
+	
+	if (rsBlock === undefined) {
+		throw new Error("bad rs block @ typeNumber:" + typeNumber + "/errorCorrectLevel:" + errorCorrectLevel);
+	}
+
+	var length = rsBlock.length / 3;
+	
+	var list = [];
+	
+	for (var i = 0; i < length; i++) {
+
+		var count = rsBlock[i * 3 + 0];
+		var totalCount = rsBlock[i * 3 + 1];
+		var dataCount  = rsBlock[i * 3 + 2];
+
+		for (var j = 0; j < count; j++) {
+			list.push(new QRRSBlock(totalCount, dataCount) );	
+		}
+	}
+	
+	return list;
+};
+
+QRRSBlock.getRsBlockTable = function(typeNumber, errorCorrectLevel) {
+
+	switch(errorCorrectLevel) {
+	case QRErrorCorrectLevel.L :
+		return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 0];
+	case QRErrorCorrectLevel.M :
+		return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 1];
+	case QRErrorCorrectLevel.Q :
+		return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 2];
+	case QRErrorCorrectLevel.H :
+		return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 3];
+	default :
+		return undefined;
+	}
+};
+
+module.exports = QRRSBlock;
+
+return module.exports;})();
+M['QRUtil']=(function(){var module={exports:{}};var exports=module.exports;
+var QRMode = require('./QRMode');
+var QRPolynomial = require('./QRPolynomial');
+var QRMath = require('./QRMath');
+var QRMaskPattern = require('./QRMaskPattern');
+
+var QRUtil = {
+
+    PATTERN_POSITION_TABLE : [
+        [],
+        [6, 18],
+        [6, 22],
+        [6, 26],
+        [6, 30],
+        [6, 34],
+        [6, 22, 38],
+        [6, 24, 42],
+        [6, 26, 46],
+        [6, 28, 50],
+        [6, 30, 54],        
+        [6, 32, 58],
+        [6, 34, 62],
+        [6, 26, 46, 66],
+        [6, 26, 48, 70],
+        [6, 26, 50, 74],
+        [6, 30, 54, 78],
+        [6, 30, 56, 82],
+        [6, 30, 58, 86],
+        [6, 34, 62, 90],
+        [6, 28, 50, 72, 94],
+        [6, 26, 50, 74, 98],
+        [6, 30, 54, 78, 102],
+        [6, 28, 54, 80, 106],
+        [6, 32, 58, 84, 110],
+        [6, 30, 58, 86, 114],
+        [6, 34, 62, 90, 118],
+        [6, 26, 50, 74, 98, 122],
+        [6, 30, 54, 78, 102, 126],
+        [6, 26, 52, 78, 104, 130],
+        [6, 30, 56, 82, 108, 134],
+        [6, 34, 60, 86, 112, 138],
+        [6, 30, 58, 86, 114, 142],
+        [6, 34, 62, 90, 118, 146],
+        [6, 30, 54, 78, 102, 126, 150],
+        [6, 24, 50, 76, 102, 128, 154],
+        [6, 28, 54, 80, 106, 132, 158],
+        [6, 32, 58, 84, 110, 136, 162],
+        [6, 26, 54, 82, 110, 138, 166],
+        [6, 30, 58, 86, 114, 142, 170]
+    ],
+
+    G15 : (1 << 10) | (1 << 8) | (1 << 5) | (1 << 4) | (1 << 2) | (1 << 1) | (1 << 0),
+    G18 : (1 << 12) | (1 << 11) | (1 << 10) | (1 << 9) | (1 << 8) | (1 << 5) | (1 << 2) | (1 << 0),
+    G15_MASK : (1 << 14) | (1 << 12) | (1 << 10)    | (1 << 4) | (1 << 1),
+
+    getBCHTypeInfo : function(data) {
+        var d = data << 10;
+        while (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G15) >= 0) {
+            d ^= (QRUtil.G15 << (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G15) ) );    
+        }
+        return ( (data << 10) | d) ^ QRUtil.G15_MASK;
+    },
+
+    getBCHTypeNumber : function(data) {
+        var d = data << 12;
+        while (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G18) >= 0) {
+            d ^= (QRUtil.G18 << (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G18) ) );    
+        }
+        return (data << 12) | d;
+    },
+
+    getBCHDigit : function(data) {
+
+        var digit = 0;
+
+        while (data !== 0) {
+            digit++;
+            data >>>= 1;
+        }
+
+        return digit;
+    },
+
+    getPatternPosition : function(typeNumber) {
+        return QRUtil.PATTERN_POSITION_TABLE[typeNumber - 1];
+    },
+
+    getMask : function(maskPattern, i, j) {
+        
+        switch (maskPattern) {
+            
+        case QRMaskPattern.PATTERN000 : return (i + j) % 2 === 0;
+        case QRMaskPattern.PATTERN001 : return i % 2 === 0;
+        case QRMaskPattern.PATTERN010 : return j % 3 === 0;
+        case QRMaskPattern.PATTERN011 : return (i + j) % 3 === 0;
+        case QRMaskPattern.PATTERN100 : return (Math.floor(i / 2) + Math.floor(j / 3) ) % 2 === 0;
+        case QRMaskPattern.PATTERN101 : return (i * j) % 2 + (i * j) % 3 === 0;
+        case QRMaskPattern.PATTERN110 : return ( (i * j) % 2 + (i * j) % 3) % 2 === 0;
+        case QRMaskPattern.PATTERN111 : return ( (i * j) % 3 + (i + j) % 2) % 2 === 0;
+
+        default :
+            throw new Error("bad maskPattern:" + maskPattern);
+        }
+    },
+
+    getErrorCorrectPolynomial : function(errorCorrectLength) {
+
+        var a = new QRPolynomial([1], 0);
+
+        for (var i = 0; i < errorCorrectLength; i++) {
+            a = a.multiply(new QRPolynomial([1, QRMath.gexp(i)], 0) );
+        }
+
+        return a;
+    },
+
+    getLengthInBits : function(mode, type) {
+
+        if (1 <= type && type < 10) {
+
+            // 1 - 9
+
+            switch(mode) {
+            case QRMode.MODE_NUMBER     : return 10;
+            case QRMode.MODE_ALPHA_NUM  : return 9;
+            case QRMode.MODE_8BIT_BYTE  : return 8;
+            case QRMode.MODE_KANJI      : return 8;
+            default :
+                throw new Error("mode:" + mode);
+            }
+
+        } else if (type < 27) {
+
+            // 10 - 26
+
+            switch(mode) {
+            case QRMode.MODE_NUMBER     : return 12;
+            case QRMode.MODE_ALPHA_NUM  : return 11;
+            case QRMode.MODE_8BIT_BYTE  : return 16;
+            case QRMode.MODE_KANJI      : return 10;
+            default :
+                throw new Error("mode:" + mode);
+            }
+
+        } else if (type < 41) {
+
+            // 27 - 40
+
+            switch(mode) {
+            case QRMode.MODE_NUMBER     : return 14;
+            case QRMode.MODE_ALPHA_NUM  : return 13;
+            case QRMode.MODE_8BIT_BYTE  : return 16;
+            case QRMode.MODE_KANJI      : return 12;
+            default :
+                throw new Error("mode:" + mode);
+            }
+
+        } else {
+            throw new Error("type:" + type);
+        }
+    },
+
+    getLostPoint : function(qrCode) {
+        
+        var moduleCount = qrCode.getModuleCount();
+        var lostPoint = 0;
+        var row = 0; 
+        var col = 0;
+
+        
+        // LEVEL1
+        
+        for (row = 0; row < moduleCount; row++) {
+
+            for (col = 0; col < moduleCount; col++) {
+
+                var sameCount = 0;
+                var dark = qrCode.isDark(row, col);
+
+                for (var r = -1; r <= 1; r++) {
+
+                    if (row + r < 0 || moduleCount <= row + r) {
+                        continue;
+                    }
+
+                    for (var c = -1; c <= 1; c++) {
+
+                        if (col + c < 0 || moduleCount <= col + c) {
+                            continue;
+                        }
+
+                        if (r === 0 && c === 0) {
+                            continue;
+                        }
+
+                        if (dark === qrCode.isDark(row + r, col + c) ) {
+                            sameCount++;
+                        }
+                    }
+                }
+
+                if (sameCount > 5) {
+                    lostPoint += (3 + sameCount - 5);
+                }
+            }
+        }
+
+        // LEVEL2
+
+        for (row = 0; row < moduleCount - 1; row++) {
+            for (col = 0; col < moduleCount - 1; col++) {
+                var count = 0;
+                if (qrCode.isDark(row,     col    ) ) count++;
+                if (qrCode.isDark(row + 1, col    ) ) count++;
+                if (qrCode.isDark(row,     col + 1) ) count++;
+                if (qrCode.isDark(row + 1, col + 1) ) count++;
+                if (count === 0 || count === 4) {
+                    lostPoint += 3;
+                }
+            }
+        }
+
+        // LEVEL3
+
+        for (row = 0; row < moduleCount; row++) {
+            for (col = 0; col < moduleCount - 6; col++) {
+                if (qrCode.isDark(row, col) && 
+                        !qrCode.isDark(row, col + 1) && 
+                         qrCode.isDark(row, col + 2) && 
+                         qrCode.isDark(row, col + 3) && 
+                         qrCode.isDark(row, col + 4) && 
+                        !qrCode.isDark(row, col + 5) && 
+                         qrCode.isDark(row, col + 6) ) {
+                    lostPoint += 40;
+                }
+            }
+        }
+
+        for (col = 0; col < moduleCount; col++) {
+            for (row = 0; row < moduleCount - 6; row++) {
+                if (qrCode.isDark(row, col) &&
+                        !qrCode.isDark(row + 1, col) &&
+                         qrCode.isDark(row + 2, col) &&
+                         qrCode.isDark(row + 3, col) &&
+                         qrCode.isDark(row + 4, col) &&
+                        !qrCode.isDark(row + 5, col) &&
+                         qrCode.isDark(row + 6, col) ) {
+                    lostPoint += 40;
+                }
+            }
+        }
+
+        // LEVEL4
+        
+        var darkCount = 0;
+
+        for (col = 0; col < moduleCount; col++) {
+            for (row = 0; row < moduleCount; row++) {
+                if (qrCode.isDark(row, col) ) {
+                    darkCount++;
+                }
+            }
+        }
+        
+        var ratio = Math.abs(100 * darkCount / moduleCount / moduleCount - 50) / 5;
+        lostPoint += ratio * 10;
+
+        return lostPoint;       
+    }
+
+};
+
+module.exports = QRUtil;
+
+return module.exports;})();
+M['index']=(function(){var module={exports:{}};var exports=module.exports;
+//---------------------------------------------------------------------
+// QRCode for JavaScript
+//
+// Copyright (c) 2009 Kazuhiko Arase
+//
+// URL: http://www.d-project.com/
+//
+// Licensed under the MIT license:
+//   http://www.opensource.org/licenses/mit-license.php
+//
+// The word "QR Code" is registered trademark of 
+// DENSO WAVE INCORPORATED
+//   http://www.denso-wave.com/qrcode/faqpatent-e.html
+//
+//---------------------------------------------------------------------
+// Modified to work in node for this project (and some refactoring)
+//---------------------------------------------------------------------
+
+var QR8bitByte = require('./QR8bitByte');
+var QRUtil = require('./QRUtil');
+var QRPolynomial = require('./QRPolynomial');
+var QRRSBlock = require('./QRRSBlock');
+var QRBitBuffer = require('./QRBitBuffer');
+
+function QRCode(typeNumber, errorCorrectLevel) {
+	this.typeNumber = typeNumber;
+	this.errorCorrectLevel = errorCorrectLevel;
+	this.modules = null;
+	this.moduleCount = 0;
+	this.dataCache = null;
+	this.dataList = [];
+}
+
+QRCode.prototype = {
+	
+	addData : function(data) {
+		var newData = new QR8bitByte(data);
+		this.dataList.push(newData);
+		this.dataCache = null;
+	},
+	
+	isDark : function(row, col) {
+		if (row < 0 || this.moduleCount <= row || col < 0 || this.moduleCount <= col) {
+			throw new Error(row + "," + col);
+		}
+		return this.modules[row][col];
+	},
+
+	getModuleCount : function() {
+		return this.moduleCount;
+	},
+	
+	make : function() {
+		// Calculate automatically typeNumber if provided is < 1
+		if (this.typeNumber < 1 ){
+			var typeNumber = 1;
+			for (typeNumber = 1; typeNumber < 40; typeNumber++) {
+				var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, this.errorCorrectLevel);
+
+				var buffer = new QRBitBuffer();
+				var totalDataCount = 0;
+				for (var i = 0; i < rsBlocks.length; i++) {
+					totalDataCount += rsBlocks[i].dataCount;
+				}
+
+				for (var x = 0; x < this.dataList.length; x++) {
+					var data = this.dataList[x];
+					buffer.put(data.mode, 4);
+					buffer.put(data.getLength(), QRUtil.getLengthInBits(data.mode, typeNumber) );
+					data.write(buffer);
+				}
+				if (buffer.getLengthInBits() <= totalDataCount * 8)
+					break;
+			}
+			this.typeNumber = typeNumber;
+		}
+		this.makeImpl(false, this.getBestMaskPattern() );
+	},
+	
+	makeImpl : function(test, maskPattern) {
+		
+		this.moduleCount = this.typeNumber * 4 + 17;
+		this.modules = new Array(this.moduleCount);
+		
+		for (var row = 0; row < this.moduleCount; row++) {
+			
+			this.modules[row] = new Array(this.moduleCount);
+			
+			for (var col = 0; col < this.moduleCount; col++) {
+				this.modules[row][col] = null;//(col + row) % 3;
+			}
+		}
+	
+		this.setupPositionProbePattern(0, 0);
+		this.setupPositionProbePattern(this.moduleCount - 7, 0);
+		this.setupPositionProbePattern(0, this.moduleCount - 7);
+		this.setupPositionAdjustPattern();
+		this.setupTimingPattern();
+		this.setupTypeInfo(test, maskPattern);
+		
+		if (this.typeNumber >= 7) {
+			this.setupTypeNumber(test);
+		}
+	
+		if (this.dataCache === null) {
+			this.dataCache = QRCode.createData(this.typeNumber, this.errorCorrectLevel, this.dataList);
+		}
+	
+		this.mapData(this.dataCache, maskPattern);
+	},
+
+	setupPositionProbePattern : function(row, col)  {
+		
+		for (var r = -1; r <= 7; r++) {
+			
+			if (row + r <= -1 || this.moduleCount <= row + r) continue;
+			
+			for (var c = -1; c <= 7; c++) {
+				
+				if (col + c <= -1 || this.moduleCount <= col + c) continue;
+				
+				if ( (0 <= r && r <= 6 && (c === 0 || c === 6) ) || 
+                     (0 <= c && c <= 6 && (r === 0 || r === 6) ) || 
+                     (2 <= r && r <= 4 && 2 <= c && c <= 4) ) {
+					this.modules[row + r][col + c] = true;
+				} else {
+					this.modules[row + r][col + c] = false;
+				}
+			}		
+		}		
+	},
+	
+	getBestMaskPattern : function() {
+	
+		var minLostPoint = 0;
+		var pattern = 0;
+	
+		for (var i = 0; i < 8; i++) {
+			
+			this.makeImpl(true, i);
+	
+			var lostPoint = QRUtil.getLostPoint(this);
+	
+			if (i === 0 || minLostPoint >  lostPoint) {
+				minLostPoint = lostPoint;
+				pattern = i;
+			}
+		}
+	
+		return pattern;
+	},
+	
+	createMovieClip : function(target_mc, instance_name, depth) {
+	
+		var qr_mc = target_mc.createEmptyMovieClip(instance_name, depth);
+		var cs = 1;
+	
+		this.make();
+
+		for (var row = 0; row < this.modules.length; row++) {
+			
+			var y = row * cs;
+			
+			for (var col = 0; col < this.modules[row].length; col++) {
+	
+				var x = col * cs;
+				var dark = this.modules[row][col];
+			
+				if (dark) {
+					qr_mc.beginFill(0, 100);
+					qr_mc.moveTo(x, y);
+					qr_mc.lineTo(x + cs, y);
+					qr_mc.lineTo(x + cs, y + cs);
+					qr_mc.lineTo(x, y + cs);
+					qr_mc.endFill();
+				}
+			}
+		}
+		
+		return qr_mc;
+	},
+
+	setupTimingPattern : function() {
+		
+		for (var r = 8; r < this.moduleCount - 8; r++) {
+			if (this.modules[r][6] !== null) {
+				continue;
+			}
+			this.modules[r][6] = (r % 2 === 0);
+		}
+	
+		for (var c = 8; c < this.moduleCount - 8; c++) {
+			if (this.modules[6][c] !== null) {
+				continue;
+			}
+			this.modules[6][c] = (c % 2 === 0);
+		}
+	},
+	
+	setupPositionAdjustPattern : function() {
+	
+		var pos = QRUtil.getPatternPosition(this.typeNumber);
+		
+		for (var i = 0; i < pos.length; i++) {
+		
+			for (var j = 0; j < pos.length; j++) {
+			
+				var row = pos[i];
+				var col = pos[j];
+				
+				if (this.modules[row][col] !== null) {
+					continue;
+				}
+				
+				for (var r = -2; r <= 2; r++) {
+				
+					for (var c = -2; c <= 2; c++) {
+					
+						if (Math.abs(r) === 2 || 
+                            Math.abs(c) === 2 ||
+                            (r === 0 && c === 0) ) {
+							this.modules[row + r][col + c] = true;
+						} else {
+							this.modules[row + r][col + c] = false;
+						}
+					}
+				}
+			}
+		}
+	},
+	
+	setupTypeNumber : function(test) {
+	
+		var bits = QRUtil.getBCHTypeNumber(this.typeNumber);
+        var mod;
+	
+		for (var i = 0; i < 18; i++) {
+			mod = (!test && ( (bits >> i) & 1) === 1);
+			this.modules[Math.floor(i / 3)][i % 3 + this.moduleCount - 8 - 3] = mod;
+		}
+	
+		for (var x = 0; x < 18; x++) {
+			mod = (!test && ( (bits >> x) & 1) === 1);
+			this.modules[x % 3 + this.moduleCount - 8 - 3][Math.floor(x / 3)] = mod;
+		}
+	},
+	
+	setupTypeInfo : function(test, maskPattern) {
+	
+		var data = (this.errorCorrectLevel << 3) | maskPattern;
+		var bits = QRUtil.getBCHTypeInfo(data);
+        var mod;
+	
+		// vertical		
+		for (var v = 0; v < 15; v++) {
+	
+			mod = (!test && ( (bits >> v) & 1) === 1);
+	
+			if (v < 6) {
+				this.modules[v][8] = mod;
+			} else if (v < 8) {
+				this.modules[v + 1][8] = mod;
+			} else {
+				this.modules[this.moduleCount - 15 + v][8] = mod;
+			}
+		}
+	
+		// horizontal
+		for (var h = 0; h < 15; h++) {
+	
+			mod = (!test && ( (bits >> h) & 1) === 1);
+			
+			if (h < 8) {
+				this.modules[8][this.moduleCount - h - 1] = mod;
+			} else if (h < 9) {
+				this.modules[8][15 - h - 1 + 1] = mod;
+			} else {
+				this.modules[8][15 - h - 1] = mod;
+			}
+		}
+	
+		// fixed module
+		this.modules[this.moduleCount - 8][8] = (!test);
+	
+	},
+	
+	mapData : function(data, maskPattern) {
+		
+		var inc = -1;
+		var row = this.moduleCount - 1;
+		var bitIndex = 7;
+		var byteIndex = 0;
+		
+		for (var col = this.moduleCount - 1; col > 0; col -= 2) {
+	
+			if (col === 6) col--;
+	
+			while (true) {
+	
+				for (var c = 0; c < 2; c++) {
+					
+					if (this.modules[row][col - c] === null) {
+						
+						var dark = false;
+	
+						if (byteIndex < data.length) {
+							dark = ( ( (data[byteIndex] >>> bitIndex) & 1) === 1);
+						}
+	
+						var mask = QRUtil.getMask(maskPattern, row, col - c);
+	
+						if (mask) {
+							dark = !dark;
+						}
+						
+						this.modules[row][col - c] = dark;
+						bitIndex--;
+	
+						if (bitIndex === -1) {
+							byteIndex++;
+							bitIndex = 7;
+						}
+					}
+				}
+								
+				row += inc;
+	
+				if (row < 0 || this.moduleCount <= row) {
+					row -= inc;
+					inc = -inc;
+					break;
+				}
+			}
+		}
+		
+	}
+
+};
+
+QRCode.PAD0 = 0xEC;
+QRCode.PAD1 = 0x11;
+
+QRCode.createData = function(typeNumber, errorCorrectLevel, dataList) {
+	
+	var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, errorCorrectLevel);
+	
+	var buffer = new QRBitBuffer();
+	
+	for (var i = 0; i < dataList.length; i++) {
+		var data = dataList[i];
+		buffer.put(data.mode, 4);
+		buffer.put(data.getLength(), QRUtil.getLengthInBits(data.mode, typeNumber) );
+		data.write(buffer);
+	}
+
+	// calc num max data.
+	var totalDataCount = 0;
+	for (var x = 0; x < rsBlocks.length; x++) {
+		totalDataCount += rsBlocks[x].dataCount;
+	}
+
+	if (buffer.getLengthInBits() > totalDataCount * 8) {
+		throw new Error("code length overflow. (" + 
+            buffer.getLengthInBits() + 
+            ">" +  
+            totalDataCount * 8 + 
+            ")");
+	}
+
+	// end code
+	if (buffer.getLengthInBits() + 4 <= totalDataCount * 8) {
+		buffer.put(0, 4);
+	}
+
+	// padding
+	while (buffer.getLengthInBits() % 8 !== 0) {
+		buffer.putBit(false);
+	}
+
+	// padding
+	while (true) {
+		
+		if (buffer.getLengthInBits() >= totalDataCount * 8) {
+			break;
+		}
+		buffer.put(QRCode.PAD0, 8);
+		
+		if (buffer.getLengthInBits() >= totalDataCount * 8) {
+			break;
+		}
+		buffer.put(QRCode.PAD1, 8);
+	}
+
+	return QRCode.createBytes(buffer, rsBlocks);
+};
+
+QRCode.createBytes = function(buffer, rsBlocks) {
+
+	var offset = 0;
+	
+	var maxDcCount = 0;
+	var maxEcCount = 0;
+	
+	var dcdata = new Array(rsBlocks.length);
+	var ecdata = new Array(rsBlocks.length);
+	
+	for (var r = 0; r < rsBlocks.length; r++) {
+
+		var dcCount = rsBlocks[r].dataCount;
+		var ecCount = rsBlocks[r].totalCount - dcCount;
+
+		maxDcCount = Math.max(maxDcCount, dcCount);
+		maxEcCount = Math.max(maxEcCount, ecCount);
+		
+		dcdata[r] = new Array(dcCount);
+		
+		for (var i = 0; i < dcdata[r].length; i++) {
+			dcdata[r][i] = 0xff & buffer.buffer[i + offset];
+		}
+		offset += dcCount;
+		
+		var rsPoly = QRUtil.getErrorCorrectPolynomial(ecCount);
+		var rawPoly = new QRPolynomial(dcdata[r], rsPoly.getLength() - 1);
+
+		var modPoly = rawPoly.mod(rsPoly);
+		ecdata[r] = new Array(rsPoly.getLength() - 1);
+		for (var x = 0; x < ecdata[r].length; x++) {
+            var modIndex = x + modPoly.getLength() - ecdata[r].length;
+			ecdata[r][x] = (modIndex >= 0)? modPoly.get(modIndex) : 0;
+		}
+
+	}
+	
+	var totalCodeCount = 0;
+	for (var y = 0; y < rsBlocks.length; y++) {
+		totalCodeCount += rsBlocks[y].totalCount;
+	}
+
+	var data = new Array(totalCodeCount);
+	var index = 0;
+
+	for (var z = 0; z < maxDcCount; z++) {
+		for (var s = 0; s < rsBlocks.length; s++) {
+			if (z < dcdata[s].length) {
+				data[index++] = dcdata[s][z];
+			}
+		}
+	}
+
+	for (var xx = 0; xx < maxEcCount; xx++) {
+		for (var t = 0; t < rsBlocks.length; t++) {
+			if (xx < ecdata[t].length) {
+				data[index++] = ecdata[t][xx];
+			}
+		}
+	}
+
+	return data;
+
+};
+
+module.exports = QRCode;
+
+return module.exports;})();
+return {QRCode:M['index'],ECL:M['QRErrorCorrectLevel']};})();
+</script>
+<script>
+"use strict";
+/* ============================================================ Grundlagen */
+const CFG = window.FLIGHTCHECK_CONFIG || {};
+const DB_ON = !!(CFG.SUPABASE_URL && CFG.SUPABASE_KEY);
+const TABLE = "flight_results";
+const DEMO_KEY = "flightcheck_demo_results";
+const TEACHER_HASH = "f0a6d674ce486bcaba4ca3c291916199632bbc749c4d97e2aacdaf98f2663cb9";   // SHA-256 des Lehrercodes (nur für den Demo-Modus)
+const $app = document.getElementById("app");
+
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const md = s => esc(s).replace(/`([^`]+)`/g, "<code>$1</code>").replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>");
+const normIni = s => String(s || "").toUpperCase().replace(/[^A-ZÄÖÜ0-9]/g, "").slice(0, 6);
+const normCode = s => String(s || "").replace(/\s+/g, "").replace(/[„“”]/g, '"').replace(/;+$/, "");
+const pct = (p, m) => m ? Math.round(100 * p / m) : 0;
+const AREAS = [["Ü1", "Fachsprache"], ["Ü2", "Objekt- und Klassenkarte"], ["Ü3", "Nachrichten"]];
+const ls = { get(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } },
+             set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} },
+             del(k){ try{ localStorage.removeItem(k); }catch(e){} } };
+
+function seedOf(str){ let h = 2166136261; for (const c of String(str)) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return h >>> 0; }
+function shuffle(arr, seed){
+  const a = arr.slice(); let t = seed >>> 0;
+  const rnd = () => { t = (t + 0x6D2B79F5) >>> 0; let r = Math.imul(t ^ (t >>> 15), 1 | t); r ^= r + Math.imul(r ^ (r >>> 7), 61 | r); return ((r ^ (r >>> 14)) >>> 0) / 4294967296; };
+  for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+/* Reihenfolge pro Schüler gemischt (fest für dieselben Initialen), aber nie so, dass die Lösungen der Reihe nach im Menü stehen */
+function mixed(p){
+  const ini = (typeof Me !== "undefined" && Me.ini) || "X";
+  let rows = p.rows ? shuffle(p.rows, seedOf(ini + p.id + "r")) : null;
+  let options = shuffle(p.options, seedOf(ini + p.id + "o"));
+  const answers = rows ? rows.map(r => r[1]) : [...p.fields.filter(f => f[1]).map(f => f[1]), ...p.methods.filter(m => m[1]).map(m => m[1])];
+  const tooEasy = () => answers.every((c, i) => options[i] === c) || options.join() === p.options.join();
+  for (let k = 1; tooEasy() && k < 12; k++) options = shuffle(p.options, seedOf(ini + p.id + "o" + k));
+  return { rows, options };
+}
+async function sha256(t){
+  if (window.crypto && crypto.subtle && window.isSecureContext){
+    const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t));
+    return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, "0")).join("");
+  }
+  return sha256js(t);
+}
+function sha256js(ascii){
+  const rr = (v, a) => (v >>> a) | (v << (32 - a));
+  const bytes = Array.from(new TextEncoder().encode(ascii));
+  const K = [], H = [];
+  let n = 2, c = 0;
+  while (c < 64){ let p = true; for (let d = 2; d * d <= n; d++) if (n % d === 0){ p = false; break; }
+    if (p){ if (c < 8) H[c] = (Math.pow(n, 1 / 2) * 4294967296) | 0; K[c++] = (Math.pow(n, 1 / 3) * 4294967296) | 0; } n++; }
+  const l = bytes.length * 8; bytes.push(0x80); while (bytes.length % 64 !== 56) bytes.push(0);
+  for (let i = 7; i >= 0; i--) bytes.push(i > 3 ? 0 : (l >>> (i * 8)) & 255);
+  for (let j = 0; j < bytes.length; j += 64){
+    const w = []; for (let i = 0; i < 16; i++) w[i] = (bytes[j + 4 * i] << 24) | (bytes[j + 4 * i + 1] << 16) | (bytes[j + 4 * i + 2] << 8) | bytes[j + 4 * i + 3];
+    let [a, b, cc, d, e, f, g, h] = H;
+    for (let i = 0; i < 64; i++){
+      if (i >= 16){ const w15 = w[i - 15], w2 = w[i - 2];
+        w[i] = (w[i - 16] + (rr(w15, 7) ^ rr(w15, 18) ^ (w15 >>> 3)) + w[i - 7] + (rr(w2, 17) ^ rr(w2, 19) ^ (w2 >>> 10))) | 0; }
+      const t1 = (h + (rr(e, 6) ^ rr(e, 11) ^ rr(e, 25)) + ((e & f) ^ (~e & g)) + K[i] + w[i]) | 0;
+      const t2 = ((rr(a, 2) ^ rr(a, 13) ^ rr(a, 22)) + ((a & b) ^ (a & cc) ^ (b & cc))) | 0;
+      h = g; g = f; f = e; e = (d + t1) | 0; d = cc; cc = b; b = a; a = (t1 + t2) | 0;
+    }
+    H[0] = (H[0] + a) | 0; H[1] = (H[1] + b) | 0; H[2] = (H[2] + cc) | 0; H[3] = (H[3] + d) | 0;
+    H[4] = (H[4] + e) | 0; H[5] = (H[5] + f) | 0; H[6] = (H[6] + g) | 0; H[7] = (H[7] + h) | 0;
+  }
+  return H.map(x => (x >>> 0).toString(16).padStart(8, "0")).join("");
+}
+
+
+/* ============================================================ Datenspeicher */
+const Store = {
+  headers(){
+    const h = { "apikey": CFG.SUPABASE_KEY, "Content-Type": "application/json" };
+    if (/^eyJ/.test(CFG.SUPABASE_KEY)) h.Authorization = "Bearer " + CFG.SUPABASE_KEY;
+    return h;
+  },
+  base(){ return CFG.SUPABASE_URL.replace(/\/+$/, "") + "/rest/v1/"; },
+  async submit(rec){
+    if (!DB_ON){ const all = ls.get(DEMO_KEY) || []; all.push({ ...rec, id: Date.now(), created_at: new Date().toISOString() }); ls.set(DEMO_KEY, all); return; }
+    const r = await fetch(this.base() + TABLE, { method: "POST", headers: { ...this.headers(), Prefer: "return=minimal" }, body: JSON.stringify(rec) });
+    if (!r.ok) throw new Error("Speichern fehlgeschlagen (" + r.status + ")");
+  },
+  async rpc(fn, body){
+    const r = await fetch(this.base() + "rpc/" + fn, { method: "POST", headers: this.headers(), body: JSON.stringify(body) });
+    if (!r.ok){ const t = await r.text(); const e = new Error(t || ("Fehler " + r.status)); e.status = r.status; e.auth = /invalid code/i.test(t); throw e; }
+    return r.json();
+  },
+  async checkCode(code){
+    if (!DB_ON) return (await sha256(code)) === TEACHER_HASH;
+    try { await this.rpc("flight_get", { p_code: code }); return true; } catch(e){ if (e.auth) return false; throw e; }
+  },
+  async all(code){
+    if (!DB_ON) return ls.get(DEMO_KEY) || [];
+    return this.rpc("flight_get", { p_code: code });
+  },
+  async remove(code, initials){
+    if (!DB_ON){ const all = (ls.get(DEMO_KEY) || []).filter(r => initials && normIni(r.initials) !== normIni(initials)); ls.set(DEMO_KEY, all); return; }
+    return this.rpc("flight_delete", { p_code: code, p_initials: initials || null });
+  }
+};
+
+/* ============================================================ Aufgaben
+   area: 0 = Ü1, 1 = Ü2, 2 = Ü3 · part "a" = übersetzen (bestimmt im Pre-Check den Status), "b" = beurteilen
+   b-Teile: Urteil (korrekt/fehlerhaft) + Begründung als Freitext (Kernpunkt-Prüfung) + ggf. Korrektur als Nachricht */
+const UM = ["verschieb\\w*\\s+um\\b", "\\bum\\s+(\\d|den|einen|diesen|\\w+\\s+pixel)", "relativ", "addier", "dazu", "hinzu", "zusaetzlich", "nicht\\s+auf\\b", "nicht\\s+(die|eine)\\s+(ziel)?position", "betrag", "\\+"];
+const PRE = {
+  key: "pre", code: "D1", title: "Pre-Flight-Check", sub: "Eingangsdiagnose · Was kann ich schon?",
+  intro: "Bearbeite die folgenden drei Aufgaben.",
+  items: [
+    { area: 0, parts: [
+      { id: "1a", part: "a", type: "match", q: "Ordne jedem Begriff aus dem Projekt Shapes den passenden Fachbegriff zu. Entscheide, ob es sich um ein **Objekt**, eine **Klasse**, ein **Attribut** oder eine **Methode** handelt.",
+        options: ["Objekt", "Klasse", "Attribut", "Methode"],
+        rows: [["mond", "Objekt"], ["Circle", "Klasse"], ["diameter", "Attribut"], ["changeColor", "Methode"]],
+        expl: "`mond` ist ein konkretes **Objekt**, `Circle` ist der Bauplan (**Klasse**), `diameter` beschreibt den Zustand (**Attribut**), `changeColor` beschreibt ein Verhalten (**Methode**)." },
+      { id: "1b", part: "b", type: "judge", correct: "korrekt",
+        q: "Ben hat den Satz „Mond und Fenster sind beide Kreise.“ folgendermaßen in Fachsprache übersetzt:",
+        quote: "„`mond` und `fenster` sind Objekte der Klasse `Circle`.“",
+        task: "**Beurteile**, ob Bens Übersetzung korrekt oder fehlerhaft ist, und **begründe** dein Urteil fachlich.",
+        concepts: [
+          ["`mond` und `fenster` sind **Objekte**", ["objekt"]],
+          ["beide gehören zur **selben Klasse** bzw. zum selben Bauplan `Circle`", ["(gleich|selb|beide|gemeinsam|dies)\\w*\\s+(\\w+\\s+)?(klasse|bauplan)", "klasse\\s+circle", "circle\\s+(ist\\s+)?(die|eine|ihre|deren)?\\s*klasse", "bauplan"]],
+          ["sie unterscheiden sich nur in ihren **Attributwerten** (z. B. Größe, Farbe, Position)", ["wert", "unterschied", "unterscheid", "verschieden", "anders", "groesse", "farbe", "position", "durchmesser", "diameter"]]],
+        model: "Die Übersetzung ist **korrekt**: `mond` und `fenster` sind zwei **Objekte**, die nach demselben Bauplan, der **Klasse** `Circle`, erzeugt wurden. Sie unterscheiden sich nur in ihren **Attributwerten**, z. B. im Durchmesser und in der Farbe." } ] },
+    { area: 1, parts: [
+      { id: "2a", part: "a", type: "types", q: "Ergänze in der Klassenkarte der Klasse `Circle` die fehlenden **Datentypen**.",
+        options: ["int", "double", "boolean", "String"], cls: "Circle",
+        fields: [["diameter", "int"], ["xPosition", null, "int"], ["color", "String"], ["isVisible", "boolean"]],
+        methods: [["changeColor(newColor: ", "String", ")"], ["moveVertical(distance: int)", null]],
+        expl: "`diameter: int` (ganze Zahl) · `color: String` (Text) · `isVisible: boolean` (wahr/falsch) · `changeColor(newColor: String)`" },
+      { id: "2b", part: "b", type: "judge", correct: "fehlerhaft",
+        q: "Nele hat den Zustand des Objekts `fenster` aus dem Objektinspektor in eine Objektkarte übersetzt.",
+        scene: { insp: ["fenster", "Circle", [["int diameter", "20"], ["int xPosition", "100"], ["int yPosition", "150"], ["String color", '"yellow"'], ["boolean isVisible", "true"]]],
+                 card: ["Circle : fenster", ["diameter = 20.0", "xPosition = 100", "yPosition = 150", 'color = "yellow"', "isVisible = true"], "Neles Objektkarte"] },
+        task: "**Beurteile**, ob Neles Objektkarte korrekt oder fehlerhaft ist. **Begründe** dein Urteil und gib bei jedem Fehler die richtige **Korrektur** an.",
+        concepts: [
+          ["Der **Kopf** ist vertauscht – richtig ist `fenster : Circle` (erst das Objekt, dann die Klasse)", ["kopf", "reihenfolge", "vertausch", "umgedreht", "falsch\\s*(herum|rum)", "objekt\\w*\\s+(zuerst|vorne|vor|links|first)", "zuerst\\s+(das\\s+)?objekt", "fenster:circle"]],
+          ["`20.0` passt nicht zum Datentyp `int` – richtig ist `20`", ["20[.,]0", "nachkomma", "komma", "double", "\\bint\\b", "ganze\\s*zahl", "ganzzahl"]]],
+        model: "Die Objektkarte ist **fehlerhaft**: Der **Kopf** ist vertauscht – richtig ist `fenster : Circle`, erst das Objekt, dann die Klasse. Außerdem passt `20.0` nicht zum Datentyp `int`; richtig ist `diameter = 20`." } ] },
+    { area: 2, parts: [
+      { id: "3a", part: "a", type: "code", q: "Der Mond hat die Position `yPosition = 60` und soll um **30 Pixel nach oben** verschoben werden. Schreibe die passende **Nachricht** an das Objekt `mond` in Punktnotation auf.",
+        expect: "mond.moveVertical(-30)", placeholder: "objekt.methode(parameter);",
+        expl: "`mond.moveVertical(-30);` – die y-Achse zeigt nach unten, deshalb bedeutet **nach oben** eine **negative** Verschiebung." },
+      { id: "3b", part: "b", type: "judge", correct: "fehlerhaft",
+        q: "Paul möchte den Mond von `xPosition = 20` nach `xPosition = 210` verschieben. Dazu schreibt er folgende Nachricht:",
+        quote: "`mond.moveHorizontal(210);`",
+        task: "**Beurteile**, ob Pauls Nachricht korrekt oder fehlerhaft ist, und **begründe** dein Urteil mithilfe einer Rechnung.",
+        concepts: [
+          ["`moveHorizontal` verschiebt **um** einen Betrag, nicht **auf** eine Position", UM],
+          ["Pauls Nachricht führt zu `xPosition = 20 + 210 = 230`", ["230", "20\\s*\\+\\s*210"]],
+          ["Nötig ist **Ziel − Start = 210 − 20 = 190**", ["190", "210\\s*-\\s*20", "ziel\\s*-\\s*start", "differenz"]]],
+        fix: { q: "Schreibe die korrigierte Nachricht auf.", expect: "mond.moveHorizontal(190)", placeholder: "mond.…" },
+        model: "Die Nachricht ist **fehlerhaft**: `moveHorizontal` verschiebt **um** einen Betrag. Pauls Nachricht ergibt `xPosition = 20 + 210 = 230`. Nötig ist **Ziel − Start = 210 − 20 = 190**, also `mond.moveHorizontal(190);`" } ] } ]
+};
+
+const FINAL = {
+  key: "final", code: "D2", title: "Final-Flight-Check", showScene: true, sub: "Abschlussdiagnose · Wie sicher beurteile ich jetzt?",
+  intro: "Bearbeite die folgenden drei Aufgaben.",
+  items: [
+    { area: 0, parts: [
+      { id: "F1", part: "b", type: "judge", correct: "korrekt",
+        q: "Lea hat den Satz „Die Spitze der Rakete ist rot.“ folgendermaßen in Fachsprache übersetzt:",
+        quote: "„Das Objekt `spitze` hat das Attribut `color` mit dem Wert `\"red\"`.“",
+        ref: { lead: "Zum Vergleich siehst du die Klassenkarte der Klasse `Triangle`:",
+               cls: ["Triangle", ["height: int", "width: int", "xPosition: int", "yPosition: int", "color: String", "isVisible: boolean"],
+                     ["makeVisible()", "moveHorizontal(distance: int)", "moveVertical(distance: int)", "changeSize(newHeight: int, newWidth: int)", "changeColor(newColor: String)"]] },
+        task: "**Beurteile**, ob Leas Übersetzung korrekt oder fehlerhaft ist, und **begründe** dein Urteil fachlich.",
+        concepts: [
+          ["`spitze` ist ein **Objekt** (der Klasse `Triangle`)", ["spitze\\W+(\\w+\\W+){0,3}objekt", "objekt\\W+(\\w+\\W+){0,2}spitze", "triangle"]],
+          ["`color` ist ein **Attribut**", ["color\\W+(\\w+\\W+){0,3}attribut", "attribut\\w*\\W+(\\w+\\W+){0,2}color", "farbe\\W+(\\w+\\W+){0,3}attribut"]],
+          ["`\"red\"` ist der **Wert** des Attributs", ["red\\W+(\\w+\\W+){0,4}wert", "wert\\w*\\W+(\\w+\\W+){0,3}red", "attributwert", "rot\\W+(\\w+\\W+){0,3}wert"]]],
+        model: "Die Übersetzung ist **korrekt**: `spitze` ist ein **Objekt** der Klasse `Triangle`, `color` ist ein **Attribut** und `\"red\"` ist sein **Wert** . Laut Klassenkarte gibt es das Attribut `color` mit dem Datentyp `String`; `\"red\"` ist ein passender Wert." } ] },
+    { area: 1, parts: [
+      { id: "F2", part: "b", type: "judge", correct: "fehlerhaft",
+        q: "Tom hat den Zustand des Objekts `rumpfOben` aus dem Objektinspektor in eine Objektkarte übersetzt.",
+        scene: { insp: ["rumpfOben", "Square", [["int size", "40"], ["int xPosition", "90"], ["int yPosition", "140"], ["String color", '"blue"'], ["boolean isVisible", "true"]]],
+                 card: ["rumpfOben : Square", ["size: int", "xPosition = 90", "yPosition = 140", "color = blue", "isVisible = true"], "Toms Objektkarte"] },
+        task: "**Beurteile**, ob Toms Objektkarte korrekt oder fehlerhaft ist. **Begründe** dein Urteil und gib bei jedem Fehler die richtige **Korrektur** an.",
+        concepts: [
+          ["`size: int` ist ein **Datentyp** – auf die Objektkarte gehört der **Wert** `size = 40`", ["size=40", "datentyp", "kein\\w*\\s+wert", "wert\\s+fehlt", "statt\\s+(des\\s+|dem\\s+)?wert", "\\b40\\b"]],
+          ["`blue` ist Text und braucht **Anführungszeichen**: `color = \"blue\"`", ["anfuehrungs", "\"blue\"", "string", "\\btext", "gaensefuess", "zeichenkette"]]],
+        model: "Die Objektkarte ist **fehlerhaft**: `size: int` ist ein **Datentyp** – auf die Objektkarte gehört der **Wert**, also `size = 40`. Außerdem ist `blue` ein Text (`String`) und braucht **Anführungszeichen**: `color = \"blue\"`." } ] },
+    { area: 2, parts: [
+      { id: "F3", part: "b", type: "judge", correct: "fehlerhaft",
+        q: "Jonas möchte die Spitze von `yPosition = 15` nach `yPosition = 100` verschieben. Dazu schreibt er folgende Nachricht:",
+        quote: "`spitze.moveVertical(100);`",
+        task: "**Beurteile**, ob Jonas’ Nachricht korrekt oder fehlerhaft ist, und **begründe** dein Urteil mithilfe einer Rechnung.",
+        concepts: [
+          ["`moveVertical` verschiebt **um** einen Betrag, nicht **auf** eine Position", UM],
+          ["Jonas’ Nachricht führt zu `yPosition = 15 + 100 = 115`", ["115", "15\\s*\\+\\s*100"]],
+          ["Nötig ist **Ziel − Start = 100 − 15 = 85**", ["\\b85\\b", "100\\s*-\\s*15", "ziel\\s*-\\s*start", "differenz"]]],
+        fix: { q: "Schreibe die korrigierte Nachricht auf.", expect: "spitze.moveVertical(85)", placeholder: "spitze.…" },
+        model: "Die Nachricht ist **fehlerhaft**: `moveVertical` verschiebt **um** einen Betrag. Jonas’ Nachricht ergibt `yPosition = 15 + 100 = 115`. Nötig ist **Ziel − Start = 100 − 15 = 85**, also `spitze.moveVertical(85);`" } ] } ]
+};
+const TESTS = { pre: PRE, final: FINAL };
+const VERDICTS = ["korrekt", "fehlerhaft"];
+const PASS = 0.6;   // tragfähig: bei 2 Kernpunkten beide, bei 3 Kernpunkten mindestens zwei
+
+const TIPS = [
+  { good: "Du unterscheidest **Objekt** und **Klasse** sowie **Attribut** und **Attributwert** sicher.",
+    work: "Unterscheide **Objekt** (konkretes Ding: `mond`) und **Klasse** (Bauplan: `Circle`) sowie **Attribut** (`color`) und **Wert** (`\"red\"`). Hilfe: **H1** und die Startkriterien von Ü1." },
+  { good: "Du übersetzt sicher zwischen Objektinspektor, **Objektkarte** und **Klassenkarte**.",
+    work: "Kopf der Objektkarte: **objekt : Klasse**. Die Objektkarte zeigt **Werte**, die Klassenkarte **Datentypen**; Werte passen zum Datentyp. Hilfe: **H4** und Ü2 Plus." },
+  { good: "Du rechnest Verschiebungen richtig und erkennst fehlerhafte **Nachrichten**.",
+    work: "`move…` verschiebt **um** einen Betrag: **Verschiebung = Ziel − Start**, die y-Achse zeigt nach unten. Hilfe: **H3** und Ü3 Plus." }
+];
+
+/* ============================================================ Auswertung */
+function normText(s){
+  return " " + String(s || "").toLowerCase()
+    .replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/ß/g, "ss")
+    .replace(/[„“”«»‚‘’`´]/g, '"').replace(/[−–—]/g, "-").replace(/\s*([:=+\-])\s*/g, "$1").replace(/\s+/g, " ") + " ";
+}
+function conceptHits(p, text){
+  const n = normText(text), spaced = n.replace(/([:=+\-])/g, " $1 ").replace(/\s+/g, " ");
+  return p.concepts.map(([, pats]) => pats.some(src => { const re = new RegExp(src, "i"); return re.test(n) || re.test(spaced); }));
+}
+function needsFix(p){ return !!p.fix && p.correct === "fehlerhaft"; }
+function gradePart(p, a){
+  a = a || {};
+  if (p.type === "match"){ const rows = p.rows.map(([w, c]) => ({ w, c, g: a[w] || "", ok: a[w] === c })); const ok = rows.every(r => r.ok);
+    return { ok, score: rows.filter(r => r.ok).length / rows.length, rows }; }
+  if (p.type === "types"){ const rows = [...p.fields.filter(f => f[1]).map(f => ({ w: f[0], c: f[1] })), ...p.methods.filter(m => m[1]).map(m => ({ w: "newColor", c: m[1] }))]
+      .map(r => ({ ...r, g: a[r.w] || "", ok: a[r.w] === r.c })); const ok = rows.every(r => r.ok);
+    return { ok, score: rows.filter(r => r.ok).length / rows.length, rows }; }
+  if (p.type === "code"){ const ok = normCode(a.code) === p.expect; return { ok, score: ok ? 1 : 0, g: a.code || "", semi: /;\s*$/.test(a.code || "") }; }
+  // judge: Urteil + Begründung (+ Korrektur)
+  const vOk = a.verdict === p.correct;
+  const hits = conceptHits(p, a.text);
+  const rScore = hits.filter(Boolean).length / hits.length;
+  const fx = needsFix(p);
+  const fOk = fx ? normCode(a.fix) === p.fix.expect : true;
+  const score = fx ? (vOk ? .3 : 0) + .4 * rScore + (fOk ? .3 : 0) : (vOk ? .4 : 0) + .6 * rScore;
+  return { ok: vOk && rScore >= PASS && fOk, score, vOk, rScore, hits, fOk, fx };
+}
+function grade(test, answers){
+  const parts = {}; let sum = 0, n = 0;
+  test.items.forEach(it => it.parts.forEach(p => { const g = gradePart(p, answers[p.id]); parts[p.id] = g; sum += g.score; n++; }));
+  // Pre: startklar nur, wenn a UND b vollständig richtig sind · Final: wenn die Beurteilung richtig ist
+  const status = test.items.map(it => it.parts.every(p => parts[p.id].ok) ? "startklar" : "wartung");
+  const judged = test.items.map(it => { const p = it.parts.find(x => x.part === "b"); return parts[p.id].ok; });
+  return { parts, points: Math.round(sum * 100), max: n * 100, status, judged };
+}
+
+/* ============================================================ Bausteine */
+function inspHTML([obj, cls, rows]){
+  return `<div class="insp"><div class="ih">BlueJ: Objektinspektor</div><div class="in"><span>${esc(obj)} : ${esc(cls)}</span></div>` +
+    rows.map(([k, v]) => `<div class="ir"><span>private ${esc(k)}</span><span>${esc(v)}</span></div>`).join("") + `</div>`;
+}
+function cardHTML([head, rows, note]){
+  return `<div class="karte ok"><div class="h"><u>${esc(head)}</u></div><div class="a">${rows.map(esc).join("<br>")}</div><div class="note">${esc(note)}</div></div>`;
+}
+function kkHTML([name, attrs, methods]){
+  return `<div class="karte"><div class="h">${esc(name)}</div><div class="a">${attrs.map(esc).join("<br>")}</div><div style="line-height:1.9">${methods.map(esc).join("<br>")}</div></div>`;
+}
+function opts(list, sel){ return `<option value="">– wählen –</option>` + list.map(o => `<option${o === sel ? " selected" : ""}>${esc(o)}</option>`).join(""); }
+
+/* ============================================================ Zielbild „Rakete und Mond“ */
+function sceneSVG(){
+  const red = "#d62828", blue = "#2f63c4", yel = "#f2c230", ink = "#1c2431";
+  const lab = (x, y, t, anchor = "start") => `<text x="${x}" y="${y}" font-size="13" font-family="IBM Plex Mono, monospace" fill="${ink}" text-anchor="${anchor}">${t}</text>`;
+  const line = (x1, y1, x2, y2) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${ink}" stroke-width="1"/>`;
+  return `<svg viewBox="-70 0 400 260" width="100%" style="max-width:440px;display:block" role="img" aria-label="Zielbild: Rakete aus Spitze, zwei Rumpfteilen und Fenster, daneben der Mond">
+    <rect x="0" y="0" width="300" height="250" fill="#fff" stroke="#9aa3af" stroke-width="1.2"/>
+    <polygon points="110,100 90,140 130,140" fill="${red}"/>
+    <rect x="90" y="140" width="40" height="40" fill="${blue}"/><rect x="90" y="180" width="40" height="40" fill="${blue}"/>
+    <circle cx="110" cy="160" r="10" fill="${yel}"/><circle cx="240" cy="60" r="30" fill="${yel}"/>
+    ${line(122, 118, 160, 108)}${lab(164, 112, "spitze")}
+    ${line(130, 152, 160, 152)}${lab(164, 156, "rumpfOben")}
+    ${line(130, 200, 160, 200)}${lab(164, 204, "rumpfUnten")}
+    ${line(100, 160, 52, 160)}${lab(48, 164, "fenster", "end")}
+    ${lab(276, 64, "mond")}
+  </svg>`;
+}
+function sceneCard(mini){
+  return `<div class="card scene${mini ? " mini" : ""}"><div class="scenegrid"><div>${mini ? "" : `<h2>Unser Zielbild</h2>`}
+    <p style="margin:6px 0 8px">${md("Als Hommage an **Margaret Hamilton** erstellt ihr in BlueJ ein Bild einer **Rakete** und eines **Mondes**.")}</p>
+    </div>
+    <div>${sceneSVG()}</div></div></div>`;
+}
+
+/* ============================================================ Zustand auf dem Tablet */
+const Me = {
+  get ini(){ return ls.get("fc_ini") || ""; },
+  set ini(v){ ls.set("fc_ini", v); },
+  done(k){ return this.ini ? ls.get(`fc_done_${k}_${this.ini}`) : null; },
+  setDone(k, v){ ls.set(`fc_done_${k}_${this.ini}`, v); ls.del(`fc_draft_${k}_${this.ini}`); },
+  draft(k){ return (this.ini && ls.get(`fc_draft_${k}_${this.ini}`)) || null; },
+  setDraft(k, v){ if (this.ini) ls.set(`fc_draft_${k}_${this.ini}`, v); }
+};
+
+/* ============================================================ Router */
+const params = new URLSearchParams(location.search);
+document.getElementById("banner").innerHTML = DB_ON ? "" :
+  `<div class="demo">Demo-Modus: Ergebnisse werden nur auf diesem Gerät gespeichert. Für den Unterricht die Datenbank eintragen (siehe Anleitung).</div>`;
+const corner = document.createElement("button");
+corner.className = "corner noprint"; corner.title = "Lehrkraft"; corner.setAttribute("aria-label", "Lehrkraft"); corner.textContent = "⋯";
+corner.addEventListener("click", () => { location.href = baseURL() + "?lehrer"; });
+document.body.appendChild(corner);
+
+function boot(){
+  if (params.has("lehrer") || location.hash === "#lehrer"){ corner.remove(); teacherLogin(); }
+  else go(params.get("test"));
+}
+
+function go(want){
+  if (!Me.ini) return loginScreen(want);
+  if (want === "pre") return openTest(PRE);
+  if (want === "final") return openTest(FINAL);
+  menu();
+}
+function setURL(q){ try { history.replaceState(null, "", baseURL() + (q ? "?" + q : "")); } catch(e){} }
+
+function loginScreen(want){
+  setURL(want ? "test=" + want : "");
+  $app.innerHTML = `<div class="wrap" style="max-width:560px">
+    <div class="hero"><div class="badge">✈</div><div><h1>Flight-Check</h1><div class="sub">Übersetzungen zwischen Darstellungsformen in der OOP</div></div></div>
+    <form class="card" id="inif"><h2>Deine Initialen</h2>
+      <p class="hint" style="margin-top:6px">Gib den ersten Buchstaben deines Vornamens und deines Nachnamens ein, z. B. <b>AR</b> für Anna Richter. Nutze in beiden Checks <b>dieselben</b> Initialen. Hat jemand im Kurs dieselben? Dann hänge eine Zahl an (z. B. AR2).</p>
+      <input type="text" id="ini" maxlength="6" autocomplete="off" autocapitalize="characters" placeholder="z. B. AR"
+        style="max-width:240px;font-family:'IBM Plex Mono',monospace;font-size:24px;text-transform:uppercase;margin:6px 0 14px">
+      <div><button class="btn" type="submit">Weiter</button></div><div id="imsg" class="hint"></div></form></div>`;
+  const i = document.getElementById("ini"); i.focus();
+  document.getElementById("inif").addEventListener("submit", e => {
+    e.preventDefault();
+    const v = normIni(i.value);
+    if (v.length < 2){ document.getElementById("imsg").innerHTML = `<span class="err">Bitte mindestens zwei Buchstaben eingeben.</span>`; return; }
+    Me.ini = v; go(want);
+  });
+}
+
+function menu(){
+  setURL("");
+  const pre = Me.done("pre"), fin = Me.done("final");
+  const card = (test, done, locked) => {
+    const state = done ? `<span class="status go">✓ abgegeben</span>` : locked ? `<span class="status wn">🔒 gesperrt</span>` : `<span class="status wn">offen</span>`;
+    const sub = done ? "Auswertung und Lösungen ansehen" : locked ? "Wird freigeschaltet, sobald du den Pre-Flight-Check abgegeben hast." : test.sub;
+    return `<${locked ? "div" : "button"} class="choice${locked ? " locked" : ""}" data-go="${test.key}">
+      <span class="ch"><span class="badge sm">${test.code}</span><span class="ct"><b>${esc(test.title)}</b>${esc(sub)}</span></span>${state}</${locked ? "div" : "button"}>`;
+  };
+  $app.innerHTML = `<div class="wrap" style="max-width:720px">
+    <div class="hero"><div class="badge">✈</div><div><h1>Deine Checks</h1><div class="sub">Angemeldet als <b class="mono">${esc(Me.ini)}</b> · <a href="#" id="chg">nicht du? Initialen ändern</a></div></div></div>
+    <div class="menu">${card(PRE, pre, false)}${card(FINAL, fin, !pre)}</div></div>`;
+  document.querySelectorAll("button[data-go]").forEach(b => b.addEventListener("click", () => openTest(TESTS[b.dataset.go])));
+  document.getElementById("chg").addEventListener("click", e => { e.preventDefault(); ls.del("fc_ini"); loginScreen(); });
+}
+
+/* ============================================================ Test durchführen (aufgabenweise) */
+function openTest(test){
+  const done = Me.done(test.key);
+  if (done) return showFeedback(test, done);
+  if (test.key === "final" && !Me.done("pre")) return menu();
+  if (test.key === "final" && !Me.draft("final") && !openTest.confirmed) return finalGate();
+  setURL("test=" + test.key);
+  const st = { test, step: 0, ans: (Me.draft(test.key) || {}) };
+  renderStep(st);
+}
+function finalGate(){
+  setURL("test=final");
+  $app.innerHTML = `<div class="wrap" style="max-width:640px">
+    <div class="hero"><div class="badge">D2</div><div><h1>Final-Flight-Check</h1><div class="sub">Abschlussdiagnose · <b class="mono">${esc(Me.ini)}</b></div></div></div>
+    <div class="card" style="border-left:6px solid var(--taupe)"><h2>Kurzer Check vor dem Start</h2>
+      <p style="font-size:19px;margin:12px 0 6px"><b>Hast du alle Übungen bearbeitet?</b></p>
+      <p class="hint" style="margin:0 0 16px">Damit sind deine Übungsbereiche Ü1–Ü3 gemeint: Basis (falls nötig) und Plus. Hast du sie mit den Lösungen an der Lösungsstation verglichen und ins Logbuch eingetragen?</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap"><button class="btn" id="yes">Ja, weiter zum Test</button><button class="btn sec" id="no">Nein, zurück zum Hauptmenü</button></div></div></div>`;
+  document.getElementById("yes").addEventListener("click", () => { openTest.confirmed = true; openTest(FINAL); });
+  document.getElementById("no").addEventListener("click", menu);
+}
+function renderStep(st){
+  const { test } = st, n = test.items.length, it = test.items[st.step], [ar, an] = AREAS[it.area];
+  const dots = test.items.map((_, i) => `<span class="dot${i < st.step ? " d" : i === st.step ? " c" : ""}">${i + 1}</span>`).join("");
+  $app.innerHTML = `<div class="wrap">
+    <div class="hero"><div class="badge">${test.code}</div><div><h1>${esc(test.title)}</h1><div class="sub">${esc(test.sub)} · <b class="mono">${esc(Me.ini)}</b></div></div></div>
+    ${test.showScene ? (st.step === 0 ? sceneCard() : `<details class="scenemini"><summary>Zielbild noch einmal ansehen</summary>${sceneCard(true)}</details>`) : ""}
+    ${st.step === 0 ? `<p>${md(test.intro)}</p>` : ""}
+    <div class="dots">${dots}<span class="hint" style="margin:0 0 0 8px">Aufgabe ${st.step + 1} von ${n}</span></div>
+    <form id="f" autocomplete="off"><div class="card item"><div class="itemhead"><span class="num">${st.step + 1}</span><span class="area">${ar} · ${esc(an)}</span></div>
+      ${it.parts.map(p => `<div class="part" data-part="${p.id}">${partForm(test, p, st.ans[p.id] || {})}</div>`).join("")}</div>
+      <div class="nav"><button type="button" class="btn sec" id="back" ${st.step === 0 ? "style=\"visibility:hidden\"" : ""}>← Zurück</button>
+        <button type="submit" class="btn" id="next">${st.step === n - 1 ? "Test abgeben" : "Weiter →"}</button></div>
+      <div id="msg" class="hint" style="text-align:right"></div></form>
+    <div class="foot"><a href="#" id="tomenu">Zum Hauptmenü (Antworten bleiben gespeichert)</a></div></div>`;
+  window.scrollTo(0, 0);
+  const f = document.getElementById("f");
+  const sync = () => { Object.assign(st.ans, readItem(it, f).ans); Me.setDraft(test.key, st.ans); };
+  f.addEventListener("change", e => {
+    const t = e.target;
+    if (t.type === "radio") f.querySelectorAll(`input[name="${t.name}"]`).forEach(x => x.closest("label").classList.toggle("sel", x.checked));
+    if (t.name && t.name.endsWith("_v")){ const w = document.getElementById(t.name.replace("_v", "_fixwrap")); if (w) w.style.display = t.value === "fehlerhaft" ? "" : "none"; }
+    const m = t.closest(".missing"); if (m) m.classList.remove("missing");
+    sync();
+  });
+  f.addEventListener("input", e => { const m = e.target.closest(".missing"); if (m) m.classList.remove("missing"); sync(); });
+  document.getElementById("back").addEventListener("click", () => { sync(); st.step--; renderStep(st); });
+  document.getElementById("tomenu").addEventListener("click", e => { e.preventDefault(); sync(); menu(); });
+  f.addEventListener("submit", e => {
+    e.preventDefault(); sync();
+    const { missing } = readItem(it, f);
+    document.querySelectorAll(".missing").forEach(x => x.classList.remove("missing"));
+    if (missing.length){
+      missing.forEach(sel => { const el = f.querySelector(sel); if (el) el.classList.add("missing"); });
+      f.querySelector(missing[0]).scrollIntoView({ behavior: "smooth", block: "center" });
+      document.getElementById("msg").innerHTML = `<span class="err">Bitte bearbeite zuerst alle markierten Stellen.</span>`; return;
+    }
+    if (st.step < n - 1){ st.step++; renderStep(st); return; }
+    if (confirm("Test jetzt abgeben? Danach kannst du nichts mehr ändern.")) submitTest(st);
+  });
+}
+
+function partForm(test, p, a){
+  const lab = test.key === "pre" ? `<span class="pl">${p.part})</span>` : "";
+  if (p.type === "match"){ const mx = mixed(p); return `<div class="q">${lab}${md(p.q)}</div><div class="matchgrid">` +
+    mx.rows.map(([w]) => `<div><div class="w">${esc(w)}</div><select name="${p.id}_${w}">${opts(mx.options, a[w])}</select></div>`).join("") + `</div>`; }
+  if (p.type === "types"){
+    const mx = mixed(p);
+    const sel = n => `<select name="${p.id}_${n}">${opts(mx.options, a[n])}</select>`;
+    const at = p.fields.map(([n, need, fixed]) => `${esc(n)}: ${need ? sel(n) : esc(fixed)}`).join("<br>");
+    const m = p.methods.map(([t, need, end]) => need ? `${esc(t)}${sel("newColor")}${esc(end)}` : esc(t)).join("<br>");
+    return `<div class="q">${lab}${md(p.q)}</div><div class="hint" style="margin:-4px 0 8px">Zur Auswahl stehen ${mx.options.slice(0, -1).join(", ")} und ${mx.options[mx.options.length - 1]}.</div>
+      <div class="karte" style="max-width:460px"><div class="h">${esc(p.cls)}</div><div class="a">${at}</div><div style="line-height:1.9">${m}</div></div>`;
+  }
+  if (p.type === "code") return `<div class="q">${lab}${md(p.q)}</div><input type="text" class="codein" name="${p.id}_code" value="${esc(a.code || "")}" placeholder="${esc(p.placeholder)}" autocapitalize="off" autocorrect="off" spellcheck="false">`;
+  const fixShown = a.verdict === "fehlerhaft";
+  return `<div class="q">${lab}${md(p.q)}</div>` +
+    (p.quote ? `<div class="quote">${md(p.quote)}</div>` : "") +
+    (p.ref ? `<div class="q">${md(p.ref.lead)}</div><div style="max-width:470px;margin:4px 0 12px">${kkHTML(p.ref.cls)}</div>` : "") +
+    (p.scene ? `<div class="grid2" style="margin:8px 0 12px">${inspHTML(p.scene.insp)}${cardHTML(p.scene.card)}</div>` : "") +
+    `<div class="q" style="margin-top:10px">${md(p.task)}</div>
+     <div class="lab">Dein Urteil</div><div class="verdict" data-sel="${p.id}_v">` +
+    VERDICTS.map(v => `<label class="opt${a.verdict === v ? " sel" : ""}"><input type="radio" name="${p.id}_v" value="${v}"${a.verdict === v ? " checked" : ""}><span>${v}</span></label>`).join("") + `</div>
+     <div class="lab">Deine Begründung</div>${test.key === "final" ? `<div class="advice">${md("**Achte auf eine vollständige Begründung:** Nenne das **Kriterium** (welche Regel bzw. welches Startkriterium gilt?), den **Beleg** (was steht in der Übersetzung, was ergibt deine Rechnung?) und die **Schlussfolgerung** (korrekt oder fehlerhaft – und warum?). Ist etwas fehlerhaft, gehört die **Korrektur** dazu. Antworte ausführlich und verwende alle Fachbegriffe, die du gelernt hast.")}</div>` : ""}
+     <textarea name="${p.id}_text" maxlength="600" placeholder="${test.key === "final" ? "Kriterium – Beleg – Schlussfolgerung …" : "Die Übersetzung ist …, weil …"}">${esc(a.text || "")}</textarea>` +
+    (p.fix ? `<div id="${p.id}_fixwrap" style="display:${fixShown ? "" : "none"}"><div class="lab">${esc(p.fix.q)}</div>
+      <input type="text" class="codein" name="${p.id}_fix" value="${esc(a.fix || "")}" placeholder="${esc(p.fix.placeholder)}" autocapitalize="off" autocorrect="off" spellcheck="false"></div>` : "");
+}
+
+function readItem(it, f){
+  const fd = new FormData(f), ans = {}, missing = [];
+  it.parts.forEach(p => {
+    const a = {};
+    if (p.type === "match"){ p.rows.forEach(([w]) => { a[w] = fd.get(`${p.id}_${w}`) || ""; if (!a[w]) missing.push(`[name="${p.id}_${w}"]`); }); }
+    else if (p.type === "types"){
+      p.fields.filter(x => x[1]).forEach(([n]) => { a[n] = fd.get(`${p.id}_${n}`) || ""; if (!a[n]) missing.push(`[name="${p.id}_${n}"]`); });
+      if (p.methods.some(m => m[1])){ a.newColor = fd.get(`${p.id}_newColor`) || ""; if (!a.newColor) missing.push(`[name="${p.id}_newColor"]`); }
+    }
+    else if (p.type === "code"){ a.code = (fd.get(`${p.id}_code`) || "").trim(); if (!a.code) missing.push(`[name="${p.id}_code"]`); }
+    else {
+      a.verdict = fd.get(`${p.id}_v`) || ""; a.text = (fd.get(`${p.id}_text`) || "").trim().slice(0, 600);
+      if (p.fix) a.fix = (fd.get(`${p.id}_fix`) || "").trim();
+      if (!a.verdict) missing.push(`[data-sel="${p.id}_v"]`);
+      if (a.text.length < 15) missing.push(`[name="${p.id}_text"]`);
+      if (p.fix && a.verdict === "fehlerhaft" && !a.fix) missing.push(`[name="${p.id}_fix"]`);
+    }
+    ans[p.id] = a;
+  });
+  return { ans, missing };
+}
+
+async function submitTest(st){
+  const { test, ans } = st, g = grade(test, ans), ini = Me.ini;
+  const rec = { test: test.key, initials: ini, points: g.points, max_points: g.max,
+                status: { areas: g.status, judged: g.judged,
+                          parts: Object.fromEntries(Object.entries(g.parts).map(([k, v]) => [k, v.ok])),
+                          scores: Object.fromEntries(Object.entries(g.parts).map(([k, v]) => [k, Math.round(v.score * 100)])),
+                          reasons: Object.fromEntries(Object.entries(g.parts).filter(([, v]) => v.hits).map(([k, v]) => [k, Math.round(v.rScore * 100)])) },
+                answers: ans };
+  const btn = document.getElementById("next"), msg = document.getElementById("msg");
+  btn.disabled = true; btn.textContent = "Wird gesendet …";
+  try { await Store.submit(rec); }
+  catch(e){ btn.disabled = false; btn.textContent = "Erneut senden"; msg.innerHTML = `<span class="err">Senden hat nicht geklappt. Prüfe das WLAN und tippe erneut auf „Erneut senden“. (${esc(e.message)})</span>`; return; }
+  const done = { ini, ans, at: new Date().toISOString() };
+  Me.setDone(test.key, done);
+  showFeedback(test, done);
+}
+
+/* ============================================================ Rückmeldung */
+function showFeedback(test, done){
+  setURL("test=" + test.key);
+  const g = grade(test, done.ans);
+  const time = new Date(done.at).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
+  let html = `<div class="wrap">
+    <div class="hero"><div class="badge">${test.code}</div><div><h1>${esc(test.title)} · Auswertung</h1><div class="sub">Abgegeben um ${time} Uhr · Initialen <b class="mono">${esc(done.ini)}</b></div></div></div>
+    <div class="card"><div class="score"><div class="big">${pct(g.points, g.max)} %</div><div>Gesamtergebnis<br><span class="hint" style="margin:0">${g.parts && Object.values(g.parts).filter(x => x.ok).length} von ${Object.keys(g.parts).length} Teilaufgaben vollständig gelöst</span></div></div>
+      <div style="margin-top:10px">${AREAS.map(([a, n], i) => `<div class="statrow"><span><b>${a}</b> ${esc(n)}</span>${statusChip(g.status[i])}</div>`).join("")}</div>
+      <div class="hint">${test.key === "pre" ? "Status: Teil a (übersetzen) richtig und Teil b (Urteil, Begründung und – falls nötig – Korrektur) richtig → startklar. Ist in a oder b etwas falsch → Wartung nötig, dann startest du bei Basis." : "Status: Urteil richtig, Begründung enthält die wichtigsten Kernpunkte (von zwei beide, von drei mindestens zwei) und – falls nötig – richtig korrigiert → startklar."}</div></div>
+    <h2 style="margin-top:26px">Lösungen und Rückmeldung</h2>`;
+  test.items.forEach((it, i) => {
+    const [ar, an] = AREAS[it.area];
+    html += `<div class="card item"><div class="itemhead"><span class="num">${i + 1}</span><span class="area">${ar} · ${esc(an)}</span></div>` +
+      it.parts.map(p => fbPart(test, p, done.ans[p.id], g.parts[p.id])).join("") + `</div>`;
+  });
+  html += test.key === "pre" ? ticket(done.ini, g.status, time) : finalHints(done.ini, g);
+  html += `<div style="text-align:center;margin:26px 0"><button class="btn" id="home" style="min-width:260px">Zum Hauptmenü</button></div></div>`;
+  $app.innerHTML = html; window.scrollTo(0, 0);
+  document.getElementById("home").addEventListener("click", menu);
+}
+function statusChip(s){ return s === "startklar" ? `<span class="status go">✓ startklar</span>` : `<span class="status wn">⚙ Wartung nötig</span>`; }
+function ticket(ini, status, time){
+  const rows = AREAS.map(([a, n], i) => {
+    const w = status[i] !== "startklar";
+    return `<div class="sheet"><span class="nm">${a} · ${esc(n)}</span>
+      <span class="chip ${w ? "ba" : "off"}">● BASIS${w ? "" : " – entfällt"}</span><span class="chip pl">✚ PLUS</span>
+      <span class="hint" style="margin:0;flex-basis:100%">${w ? "Start bei <b>Basis</b> (Seite 1), danach Plus." : "Du bist startklar: Start direkt bei <b>Plus</b> (Seite 2)."}</span></div>`;
+  }).join("");
+  return `<div class="ticket"><div class="th"><b>Deine Übungsblätter</b><span class="ini">${esc(ini)}</span></div><div class="tb">
+    <p style="margin:0 0 6px"><b>Zeig dieses Feld der Lehrerin.</b> Gegen Vorlage des Tablets bekommst du deine Übungsblätter.</p>${rows}
+    <p class="hint" style="margin-top:10px">Reihenfolge: Ü1 → Ü2 → Ü3. <span class="chip zu" style="font-size:12px;padding:2px 8px">★ ZUSATZ</span> erst, wenn du Plus in allen drei Bereichen geschafft hast. Trage deinen Status ins <b>Missions-Logbuch</b> ein (Abschnitt 1) und plane dort dein Training (Abschnitt 2). · ${time} Uhr</p></div></div>`;
+}
+function finalHints(ini, g){
+  const pre = Me.done("pre");
+  const pg = pre ? grade(PRE, pre.ans) : null;
+  const good = [], work = [];
+  AREAS.forEach(([a, n], i) => {
+    const ok = g.status[i] === "startklar", before = pg ? pg.status[i] : null;
+    let extra = "";
+    if (pg && ok && before !== "startklar") extra = " <b>Verbessert seit dem Pre-Flight-Check!</b>";
+    if (pg && !ok && before === "startklar") extra = " Im Pre-Flight-Check lief das schon – lies die Startkriterien noch einmal genau.";
+    (ok ? good : work).push(`<li><b>${a} ${esc(n)}:</b> ${md(ok ? TIPS[i].good : TIPS[i].work)}${extra}</li>`);
+  });
+  const reasonAvg = Math.round(100 * FINAL.items.reduce((s, it) => s + g.parts[it.parts[0].id].rScore, 0) / FINAL.items.length);
+  const cmp = pg ? `<p style="margin:0 0 8px">Pre-Flight-Check: <b>${pct(pg.points, pg.max)} %</b> · Final-Flight-Check: <b>${pct(g.points, g.max)} %</b> · Sicher beurteilt: vorher ${pg.judged.filter(Boolean).length} von 3, jetzt ${g.judged.filter(Boolean).length} von 3.</p>` : "";
+  const style = reasonAvg >= 67 ? "Deine Begründungen nennen die wichtigen Fachbegriffe und Rechnungen – weiter so."
+    : "Deine Begründungen werden stärker, wenn du immer **Kriterium – Beleg – Schlussfolgerung** nennst und Rechnungen ausschreibst (Satzmuster: **H2**).";
+  return `<div class="card" style="border-left:6px solid var(--slate-d)"><h2>Deine Rückmeldung</h2>${cmp}
+    ${good.length ? `<h3 style="margin-top:12px;color:var(--ok)">Das läuft gut</h3><ul class="tips">${good.join("")}</ul>` : ""}
+    ${work.length ? `<h3 style="margin-top:14px;color:var(--no)">Daran arbeitest du weiter</h3><ul class="tips">${work.join("")}</ul>` : `<p style="margin-top:12px"><b>Alle drei Bereiche startklar – Mission erfüllt!</b></p>`}
+    <p style="margin-top:12px"><b>Begründen:</b> ${md(style)}</p></div>
+    <div class="next"><b>So geht es weiter:</b><br>1. Trage deinen <b>neuen Status</b> ins Missions-Logbuch ein (Abschnitt 1) und vergleiche ihn mit dem Pre-Flight-Check.<br>2. Mache mit der <b>Reflexion</b> weiter (Logbuch, Abschnitt 3).</div>`;
+}
+function fbBox(ok, title, body){ return `<div class="fb ${ok ? "ok" : "no"}"><div class="t"><span class="ico">${ok ? "✓" : "✗"}</span>${title}</div>${body ? `<div class="sol">${body}</div>` : ""}</div>`; }
+function fbPart(test, p, a, g){
+  a = a || {};
+  const lab = test.key === "pre" ? `<span class="pl">${p.part})</span>` : "";
+  let h = `<div class="part"><div class="q">${lab}${md(p.q)}</div>`;
+  if (p.quote) h += `<div class="quote">${md(p.quote)}</div>`;
+  if (p.ref) h += `<div style="max-width:470px;margin:6px 0 10px">${kkHTML(p.ref.cls)}</div>`;
+  if (p.scene) h += `<div style="max-width:300px;margin:6px 0 10px">${cardHTML(p.scene.card)}</div>`;
+  if (p.type === "match" || p.type === "types"){
+    h += g.rows.map(r => fbBox(r.ok, `<span class="mono">${esc(r.w)}</span> → ${esc(r.g || "–")}`, r.ok ? "" : `Richtig: <b>${esc(r.c)}</b>`)).join("");
+    h += `<div class="expl">${md(p.expl)}</div>`;
+  } else if (p.type === "code"){
+    h += fbBox(g.ok, `Deine Nachricht: <span class="mono">${esc(g.g || "–")}</span>`, g.ok ? (g.semi ? "" : "Tipp: Im Quelltext endet jede Anweisung mit einem Semikolon.") : `Richtig: <code>${esc(p.expect)};</code>`);
+    h += `<div class="expl">${md(p.expl)}</div>`;
+  } else {
+    h += fbBox(g.vOk, `Dein Urteil: ${esc(a.verdict || "–")}`, g.vOk ? "" : `Richtig: <b>${esc(p.correct)}</b>`);
+    const rp = Math.round(g.rScore * 100);
+    h += `<div class="fb ${g.rScore >= PASS ? "ok" : "no"}"><div class="t"><span class="ico">${g.rScore >= PASS ? "✓" : "✗"}</span>Deine Begründung: ${rp} % der Kernpunkte</div>
+      <div class="free" style="font-style:normal">${esc(a.text || "–")}</div>
+      <ul class="concepts">${p.concepts.map(([t], i) => `<li class="${g.hits[i] ? "y" : "n"}">${g.hits[i] ? "✓" : "○"} ${md(t)}</li>`).join("")}</ul></div>`;
+    if (g.fx) h += fbBox(g.fOk, `Korrektur: <span class="mono">${esc(a.fix || "–")}</span>`, g.fOk ? "" : `Richtig: <code>${esc(p.fix.expect)};</code>`);
+    h += `<div class="expl"><b>Musterlösung:</b> ${md(p.model)}</div>`;
+  }
+  return h + `</div>`;
+}
+
+/* ============================================================ Lehreransicht */
+let T = { code: null, data: [], tab: "uebersicht", showIni: false, timer: null, open: {} };
+
+function teacherLogin(){
+  const saved = sessionStorage.getItem("fc_teacher");
+  if (saved){ T.code = saved; teacherMain(); return; }
+  $app.innerHTML = `<div class="wrap" style="max-width:520px">
+    <div class="hero"><div class="badge">LP</div><div><h1>Lehreransicht</h1><div class="sub">Pre- und Final-Flight-Check zusammengeführt</div></div></div>
+    <form class="card" id="lf"><h3>Code eingeben</h3><input type="password" id="code" autocomplete="off" style="margin:10px 0 12px">
+      <button class="btn" type="submit">Anmelden</button><div id="lmsg" class="hint"></div></form>
+    <p class="hint" style="text-align:center"><a href="${baseURL()}">Zurück zur Schüleransicht</a></p></div>`;
+  document.getElementById("lf").addEventListener("submit", async e => {
+    e.preventDefault();
+    const c = document.getElementById("code").value.trim(), m = document.getElementById("lmsg");
+    m.textContent = "Prüfe …";
+    try {
+      if (await Store.checkCode(c)){ T.code = c; sessionStorage.setItem("fc_teacher", c); teacherMain(); }
+      else m.innerHTML = `<span class="err">Der Code stimmt nicht.</span>`;
+    } catch(err){ m.innerHTML = `<span class="err">Keine Verbindung zur Datenbank: ${esc(err.message)}</span>`; }
+  });
+}
+
+async function loadData(){
+  try { T.data = await Store.all(T.code); T.err = null; }
+  catch(e){ T.err = e.message; if (e.auth){ sessionStorage.removeItem("fc_teacher"); location.reload(); } }
+  T.loaded = new Date();
+}
+
+function students(){
+  // pro Initialen die ERSTE Abgabe je Test (spätere Abgaben werden gezählt, aber nicht gewertet)
+  const map = new Map();
+  [...T.data].sort((a, b) => String(a.created_at).localeCompare(String(b.created_at))).forEach(r => {
+    const k = normIni(r.initials); if (!k) return;
+    if (!map.has(k)) map.set(k, { ini: k, pre: null, final: null, n: { pre: 0, final: 0 } });
+    const s = map.get(k); s.n[r.test] = (s.n[r.test] || 0) + 1;
+    if (!s[r.test]) s[r.test] = r;
+  });
+  const list = [...map.values()].sort((a, b) => a.ini.localeCompare(b.ini, "de"));
+  list.forEach((s, i) => { s.sn = "S" + (i + 1); });
+  return list;
+}
+const P = r => r ? pct(r.points, r.max_points) : null;
+const areasOf = r => (r && r.status && r.status.areas) || null;
+function sheetsFor(s){
+  const a = areasOf(s.pre); if (!a) return null;
+  return AREAS.map(([ar], i) => a[i] === "startklar" ? `${ar} Plus` : `${ar} Basis + Plus`);
+}
+
+function teacherMain(){
+  $app.innerHTML = `<div class="wrap wide">
+    <div class="hero"><div class="badge">LP</div><div><h1>Lehreransicht</h1><div class="sub" id="meta">Lade …</div></div></div>
+    <div class="toolbar noprint">
+      <button class="btn small" id="reload">↻ Aktualisieren</button>
+      <label class="hint" style="display:flex;gap:6px;align-items:center;margin:0"><input type="checkbox" id="auto" checked> automatisch alle 15 s</label>
+      <span style="flex:1"></span>
+      <button class="btn small sec" id="csv">CSV exportieren</button>
+      ${DB_ON ? "" : `<button class="btn small sec" id="demo">Beispieldaten erzeugen</button>`}
+      <button class="btn small warn" id="wipe">Alle Ergebnisse löschen</button>
+      <button class="btn small sec" id="logout">Abmelden</button></div>
+    <div class="tabs noprint">
+      <button class="tab" data-t="uebersicht">Übersicht</button><button class="tab" data-t="grafik">Kursgrafik</button><button class="tab" data-t="qr">QR-Codes</button></div>
+    <div id="view"></div></div>`;
+  document.querySelectorAll(".tab").forEach(b => b.addEventListener("click", () => { T.tab = b.dataset.t; renderView(); }));
+  document.getElementById("reload").addEventListener("click", refresh);
+  document.getElementById("auto").addEventListener("change", e => setAuto(e.target.checked));
+  document.getElementById("csv").addEventListener("click", exportCSV);
+  document.getElementById("logout").addEventListener("click", () => { sessionStorage.removeItem("fc_teacher"); location.reload(); });
+  document.getElementById("wipe").addEventListener("click", async () => {
+    if (!confirm("Wirklich ALLE Ergebnisse (Pre und Final) endgültig löschen?")) return;
+    await Store.remove(T.code, null); refresh();
+  });
+  const d = document.getElementById("demo"); if (d) d.addEventListener("click", () => { demoData(); refresh(); });
+  setAuto(true); refresh();
+}
+function setAuto(on){ clearInterval(T.timer); T.timer = on ? setInterval(() => { if (T.tab !== "qr") refresh(); }, 15000) : null; }
+async function refresh(){ await loadData(); renderView(); }
+
+function renderView(){
+  document.querySelectorAll(".tab").forEach(b => b.classList.toggle("on", b.dataset.t === T.tab));
+  const st = students();
+  const nPre = st.filter(s => s.pre).length, nFin = st.filter(s => s.final).length;
+  document.getElementById("meta").innerHTML = (T.err ? `<span class="err">Fehler beim Laden: ${esc(T.err)}</span> · ` : "") +
+    `${nPre} Pre-Abgaben · ${nFin} Final-Abgaben · Stand ${T.loaded ? T.loaded.toLocaleTimeString("de-DE") : "–"}${DB_ON ? "" : " · Demo-Modus"}`;
+  const v = document.getElementById("view");
+  if (T.tab === "uebersicht") v.innerHTML = overview(st);
+  else if (T.tab === "grafik") v.innerHTML = chartsView(st);
+  else v.innerHTML = qrView();
+  if (T.tab === "uebersicht"){
+    v.querySelectorAll("[data-open]").forEach(b => b.addEventListener("click", () => { T.open[b.dataset.open] = !T.open[b.dataset.open]; renderView(); }));
+    v.querySelectorAll("[data-del]").forEach(b => b.addEventListener("click", async () => {
+      if (!confirm(`Alle Abgaben von ${b.dataset.del} löschen?`)) return; await Store.remove(T.code, b.dataset.del); refresh(); }));
+  }
+  if (T.tab === "grafik"){ bindChart(st); const t = document.getElementById("showini"); if (t) t.addEventListener("change", e => { T.showIni = e.target.checked; renderView(); }); }
+  if (T.tab === "qr") drawQRs();
+}
+
+function pctCell(p, color){
+  if (p === null) return `<span class="hint">–</span>`;
+  return `<div class="pct"><div class="bar"><i style="width:${p}%;background:${color}"></i></div><b>${p} %</b></div>`;
+}
+function miniStatus(r){
+  const a = areasOf(r); if (!a) return `<span class="hint">–</span>`;
+  return `<span class="mini">${a.map((s, i) => `<span class="${s === "startklar" ? "go" : "wn"}" title="${AREAS[i][0]}: ${s === "startklar" ? "startklar" : "Wartung nötig"}">${AREAS[i][0]}</span>`).join("")}</span>`;
+}
+function overview(st){
+  if (!st.length) return `<div class="empty">Noch keine Abgaben. Die QR-Codes für die Schüler findest du im Reiter „QR-Codes“.</div>`;
+  const avg = arr => arr.length ? Math.round(arr.reduce((a, b) => a + b, 0) / arr.length) : null;
+  const pres = st.filter(s => s.pre).map(s => P(s.pre)), fins = st.filter(s => s.final).map(s => P(s.final));
+  const both = st.filter(s => s.pre && s.final);
+  const up = both.filter(s => P(s.final) > P(s.pre)).length, eq = both.filter(s => P(s.final) === P(s.pre)).length;
+  const basisCount = i => st.filter(s => areasOf(s.pre) && areasOf(s.pre)[i] !== "startklar").length;
+  let h = `<div class="tiles">
+    <div class="tile"><div class="v" style="color:var(--pre)">${avg(pres) ?? "–"}${pres.length ? " %" : ""}</div><div class="k">Ø Pre-Flight-Check (${pres.length})</div></div>
+    <div class="tile"><div class="v" style="color:var(--fin)">${avg(fins) ?? "–"}${fins.length ? " %" : ""}</div><div class="k">Ø Final-Flight-Check (${fins.length})</div></div>
+    <div class="tile"><div class="v">${both.length ? up : "–"}</div><div class="k">verbessert · ${both.length ? eq : "–"} gleich · ${both.length ? both.length - up - eq : "–"} schlechter</div></div>
+    <div class="tile"><div class="v">${AREAS.map((a, i) => basisCount(i)).join(" · ")}</div><div class="k">Basisblätter Ü1 · Ü2 · Ü3 benötigt</div></div></div>
+    <div class="tablewrap"><table class="res"><thead><tr><th>Nr.</th><th>Initialen</th><th>Pre %</th><th>Pre-Status</th><th>Übungsblätter</th><th>Final %</th><th>Final-Status</th><th>Entwicklung<br>(%-Punkte)</th><th></th></tr></thead><tbody>`;
+  st.forEach(s => {
+    const sh = sheetsFor(s), d = s.pre && s.final ? P(s.final) - P(s.pre) : null;
+    const multi = (s.n.pre > 1 || s.n.final > 1) ? ` <span class="hint" title="Mehrere Abgaben – gewertet wird jeweils die erste">(${s.n.pre}/${s.n.final} Abg.)</span>` : "";
+    h += `<tr><td class="mono">${s.sn}</td><td class="mono"><b>${esc(s.ini)}</b>${multi}</td><td>${pctCell(P(s.pre), "var(--pre)")}</td><td>${miniStatus(s.pre)}</td>
+      <td>${sh ? sh.map(x => `<div style="white-space:nowrap">${/Basis/.test(x) ? `<b>${esc(x)}</b>` : esc(x)}</div>`).join("") : `<span class="hint">–</span>`}</td>
+      <td>${pctCell(P(s.final), "var(--fin)")}</td><td>${miniStatus(s.final)}</td>
+      <td class="delta" style="color:${d === null ? "var(--faint)" : d > 0 ? "var(--ok)" : d < 0 ? "var(--no)" : "var(--muted)"}">${d === null ? "–" : (d > 0 ? "▲ +" : d < 0 ? "▼ " : "= ") + d}</td>
+      <td class="noprint"><button class="linkbtn" data-open="${esc(s.ini)}">${T.open[s.ini] ? "schließen" : "Details"}</button></td></tr>`;
+    if (T.open[s.ini]) h += `<tr class="det"><td></td><td colspan="8">${details(s)}</td></tr>`;
+  });
+  h += `</tbody></table></div><p class="hint">Gewertet wird je Test die <b>erste</b> Abgabe pro Initialen. „Basis + Plus“ = Status „Wartung nötig“ im Pre-Flight-Check (Fehler in Teil a oder b).</p>`;
+  return h;
+}
+function details(s){
+  const block = (test, r) => {
+    if (!r) return `<div><h4>${test.title}</h4><span class="hint">noch keine Abgabe</span></div>`;
+    const t = new Date(r.created_at).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
+    let h = `<div><h4>${test.title} · ${t} Uhr · ${P(r)} %</h4><div class="dl">`;
+    test.items.forEach(it => it.parts.forEach(p => {
+      const a = (r.answers && r.answers[p.id]) || {}, g = gradePart(p, a);
+      h += `<span class="${g.ok ? "y" : "n"}">${g.ok ? "✓" : "✗"} ${p.id}</span><span>${esc(AREAS[it.area][0])} · ${p.part === "a" ? "übersetzen" : "beurteilen"} · ${Math.round(g.score * 100)} %${answerSummary(p, a, g)}</span>`;
+    }));
+    h += `</div>`;
+    test.items.forEach(it => it.parts.forEach(p => { const a = r.answers && r.answers[p.id]; if (a && a.text) h += `<div class="free"><b>${p.id}:</b> ${esc(a.text)}</div>`; }));
+    return h + `</div>`;
+  };
+  return `<div class="detgrid">${block(PRE, s.pre)}${block(FINAL, s.final)}</div>
+    <div style="margin-top:10px"><button class="btn small warn" data-del="${esc(s.ini)}">Abgaben von ${esc(s.ini)} löschen</button></div>`;
+}
+function answerSummary(p, a, g){
+  if (p.type === "code") return ` · <span class="mono">${esc(a.code)}</span>`;
+  if (p.type === "judge") return ` · Urteil ${esc(a.verdict || "–")} ${g.vOk ? "✓" : "✗"} · Begründung ${Math.round(g.rScore * 100)} %${g.fx ? ` · Korrektur <span class="mono">${esc(a.fix || "–")}</span> ${g.fOk ? "✓" : "✗"}` : ""}`;
+  return "";
+}
+
+/* ---------- Grafiken (SVG, ohne Bibliothek) */
+function chartsView(st){
+  const rows = st.filter(s => s.pre || s.final);
+  if (!rows.length) return `<div class="empty">Noch keine Daten für die Grafik.</div>`;
+  const W = Math.max(700, 150 + rows.length * 56), H = 380, L = 56, R = 104, TOP = 20, B = 44;
+  const x = i => L + (i + .5) * (W - L - R) / rows.length, y = v => TOP + (100 - v) / 100 * (H - TOP - B);
+  let g = "";
+  for (let v = 0; v <= 100; v += 25) g += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="#e3e7ec"/><text x="${L - 10}" y="${y(v) + 4}" text-anchor="end" font-size="12" fill="#5d6676">${v} %</text>`;
+  const avg = k => { const a = rows.filter(s => s[k]).map(s => P(s[k])); return a.length ? a.reduce((p, c) => p + c, 0) / a.length : null; };
+  [["pre", "var(--pre)", "Ø Pre"], ["final", "var(--fin)", "Ø Final"]].forEach(([k, c, lab]) => {
+    const a = avg(k); if (a === null) return;
+    g += `<line x1="${L}" x2="${W - R}" y1="${y(a)}" y2="${y(a)}" stroke="${c}" stroke-width="1.5" stroke-dasharray="6 5" opacity=".8"/>`;
+    g += `<text x="${W - R + 8}" y="${y(a) + (k === "pre" && avg("final") !== null && Math.abs(avg("final") - a) < 6 ? (a < avg("final") ? 14 : -6) : 4)}" font-size="12" font-weight="600" fill="#3b5361">${lab} ${Math.round(a)} %</text>`;
+  });
+  rows.forEach((s, i) => {
+    const xp = x(i), p = P(s.pre), f = P(s.final);
+    if (p !== null && f !== null && p !== f) g += `<line x1="${xp}" x2="${xp}" y1="${y(p)}" y2="${y(f)}" stroke="${f > p ? "#22764a" : "#b3261e"}" stroke-width="2.5"/>`;
+    const off = p !== null && f !== null && p === f ? 7 : 0;
+    if (p !== null) g += `<circle cx="${xp - off}" cy="${y(p)}" r="7" fill="#b27a2a" stroke="#fff" stroke-width="2"/>`;
+    if (f !== null) g += `<circle cx="${xp + off}" cy="${y(f)}" r="7" fill="#1f6fb0" stroke="#fff" stroke-width="2"/>`;
+    g += `<text x="${xp}" y="${H - B + 20}" text-anchor="middle" font-size="12" fill="#1c2431" font-family="IBM Plex Mono, monospace">${esc(T.showIni ? s.ini : s.sn)}</text>`;
+    g += `<rect class="hit" data-i="${i}" x="${xp - 24}" y="${TOP}" width="48" height="${H - TOP - B + 26}" fill="transparent"/>`;
+  });
+  const dumb = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="min-width:${Math.min(W, 640)}px" role="img" aria-label="Pre- und Final-Ergebnis je Schüler">${g}</svg>`;
+  // Übungsbereiche: Anteil startklar
+  const share = (k, i) => { const a = rows.filter(s => areasOf(s[k])); return a.length ? Math.round(100 * a.filter(s => areasOf(s[k])[i] === "startklar").length / a.length) : null; };
+  const BW = 640, BH = 260, bl = 56, bb = 40, bt = 16, gw = (BW - bl - 20) / 3;
+  const by = v => bt + (100 - v) / 100 * (BH - bt - bb);
+  let b = "";
+  for (let v = 0; v <= 100; v += 25) b += `<line x1="${bl}" x2="${BW - 20}" y1="${by(v)}" y2="${by(v)}" stroke="#e3e7ec"/><text x="${bl - 10}" y="${by(v) + 4}" text-anchor="end" font-size="12" fill="#5d6676">${v} %</text>`;
+  AREAS.forEach(([a, n], i) => {
+    [["pre", "#b27a2a"], ["final", "#1f6fb0"]].forEach(([k, c], j) => {
+      const v = share(k, i); if (v === null) return;
+      const x0 = bl + i * gw + gw / 2 - 46 + j * 48, h = Math.max(0, by(0) - by(v));
+      b += `<path d="M${x0} ${by(0)} V${by(v) + Math.min(4, h)} q0 -4 4 -4 h36 q4 0 4 4 V${by(0)} Z" fill="${c}"/>`;
+      b += `<text x="${x0 + 22}" y="${by(v) - 6}" text-anchor="middle" font-size="12" font-weight="600" fill="#1c2431">${v} %</text>`;
+    });
+    b += `<text x="${bl + i * gw + gw / 2}" y="${BH - bb + 22}" text-anchor="middle" font-size="13" fill="#1c2431">${a} ${esc(n)}</text>`;
+  });
+  const bars = `<svg viewBox="0 0 ${BW} ${BH}" width="100%" style="max-width:760px" role="img" aria-label="Anteil startklar je Übungsbereich">${b}</svg>`;
+  return `<div class="chartcard" id="dumbcard"><h3>Ergebnis je Schüler · Pre und Final</h3>
+      <div class="legend"><span><i style="background:#b27a2a"></i>Pre-Flight-Check</span><span><i style="background:#1f6fb0"></i>Final-Flight-Check</span>
+        <span><span style="display:inline-block;width:18px;border-top:2.5px solid #22764a;vertical-align:4px;margin-right:6px"></span>verbessert</span>
+        <span><span style="display:inline-block;width:18px;border-top:2.5px solid #b3261e;vertical-align:4px;margin-right:6px"></span>verschlechtert</span>
+        <span><span style="display:inline-block;width:18px;border-top:2px dashed #3b5361;vertical-align:4px;margin-right:6px"></span>Kursdurchschnitt</span>
+        <label class="noprint" style="margin-left:auto;display:flex;gap:6px;align-items:center"><input type="checkbox" id="showini" ${T.showIni ? "checked" : ""}> Initialen statt S-Nummern</label></div>
+      <div style="overflow-x:auto">${dumb}</div><div class="tip" id="tip"></div>
+      <p class="hint">Jeder Schüler hat zwei Punkte: Pre (ocker) und Final (blau). Die S-Nummern entsprechen der Übersichtstabelle; für den Beamer bleiben die Initialen ausgeblendet.</p></div>
+    <div class="chartcard"><h3>Anteil „startklar“ je Übungsbereich</h3>
+      <div class="legend"><span><i style="background:#b27a2a"></i>Pre-Flight-Check (a und b richtig)</span><span><i style="background:#1f6fb0"></i>Final-Flight-Check (beurteilen)</span></div>${bars}</div>`;
+}
+function bindChart(st){
+  const rows = st.filter(s => s.pre || s.final), tip = document.getElementById("tip"), card = document.getElementById("dumbcard");
+  if (!tip) return;
+  document.querySelectorAll(".hit").forEach(r => {
+    const show = e => {
+      const s = rows[+r.dataset.i], p = P(s.pre), f = P(s.final);
+      tip.innerHTML = `<b>${esc(T.showIni ? s.ini : s.sn)}</b><br>Pre: ${p === null ? "–" : p + " %"}<br>Final: ${f === null ? "–" : f + " %"}${p !== null && f !== null ? `<br>Δ ${f - p > 0 ? "+" : ""}${f - p} Prozentpunkte` : ""}`;
+      const cr = card.getBoundingClientRect(), rr = r.getBoundingClientRect();
+      tip.style.display = "block";
+      tip.style.left = Math.min(cr.width - tip.offsetWidth - 8, Math.max(8, rr.left - cr.left + rr.width / 2 - tip.offsetWidth / 2)) + "px";
+      tip.style.top = (rr.top - cr.top + 40) + "px";
+    };
+    r.addEventListener("mouseenter", show); r.addEventListener("click", show);
+    r.addEventListener("mouseleave", () => { tip.style.display = "none"; });
+  });
+}
+
+/* ---------- QR-Codes */
+function baseURL(){ return location.href.split("?")[0].split("#")[0]; }
+function qrView(){
+  const local = location.protocol === "file:";
+  return `${local ? `<div class="card" style="border-color:#f0dc9d;background:#fff8e6"><b>Hinweis:</b> Die App läuft gerade als Datei auf diesem Gerät. QR-Codes funktionieren erst, wenn die App online steht (siehe Anleitung).</div>` : ""}
+    <div class="qrs">
+      <div class="qr"><h2>Pre-Flight-Check</h2><canvas id="qrpre"></canvas><div class="u">${esc(baseURL())}?test=pre</div></div>
+      <div class="qr"><h2>Final-Flight-Check</h2><canvas id="qrfin"></canvas><div class="u">${esc(baseURL())}?test=final</div></div></div>
+    <div class="toolbar noprint" style="margin-top:14px"><button class="btn sec" onclick="window.print()">QR-Codes drucken</button>
+      <span class="hint">Lehreransicht: <span class="mono">${esc(baseURL())}?lehrer</span></span></div>`;
+}
+function drawQR(id, text){
+  const c = document.getElementById(id); if (!c || !window.QRLIB) return;
+  const q = new QRLIB.QRCode(-1, QRLIB.ECL.M); q.addData(text); q.make();
+  const n = q.getModuleCount(), sc = 10, pad = 4;
+  c.width = c.height = (n + 2 * pad) * sc;
+  const x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height); x.fillStyle = "#1c2431";
+  for (let r = 0; r < n; r++) for (let k = 0; k < n; k++) if (q.isDark(r, k)) x.fillRect((k + pad) * sc, (r + pad) * sc, sc, sc);
+}
+function drawQRs(){ drawQR("qrpre", baseURL() + "?test=pre"); drawQR("qrfin", baseURL() + "?test=final"); }
+
+/* ---------- Export und Demo */
+function exportCSV(){
+  const st = students();
+  const head = ["Nr", "Initialen", "Pre_Prozent", "Pre_U1", "Pre_U2", "Pre_U3", "Uebungsblaetter", "Final_Prozent", "Final_U1", "Final_U2", "Final_U3", "Entwicklung"];
+  const lines = [head.join(";")];
+  st.forEach(s => {
+    const a = areasOf(s.pre) || ["", "", ""], b = areasOf(s.final) || ["", "", ""];
+    const d = s.pre && s.final ? P(s.final) - P(s.pre) : "";
+    lines.push([s.sn, s.ini, P(s.pre) ?? "", ...a, (sheetsFor(s) || []).join(" | "), P(s.final) ?? "", ...b, d].join(";"));
+  });
+  const blob = new Blob(["﻿" + lines.join("\n")], { type: "text/csv;charset=utf-8" });
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "flightcheck_ergebnisse.csv"; document.body.appendChild(a); a.click(); a.remove();
+}
+function demoData(){
+  const names = ["AB", "CD", "EK", "FL", "GM", "HN", "JO", "KP", "LR", "MS", "NT", "PW"];
+  const rnd = (i, k) => ((i * 7 + k * 13) % 10) / 10;
+  const all = ls.get(DEMO_KEY) || [];
+  const texts = { "1b": ["Beide sind Objekte derselben Klasse Circle und unterscheiden sich nur in den Attributwerten.", "Weil beide rund sind."],
+    "2b": ["Der Kopf ist vertauscht, richtig ist fenster : Circle. 20.0 muss 20 sein, weil int.", "Die Farbe ist falsch geschrieben."],
+    "3b": ["moveHorizontal verschiebt um 210, dann ist er bei 230. Richtig wäre 210 - 20 = 190.", "Er muss nach rechts."],
+    "F1": ["spitze ist ein Objekt, color ein Attribut und red der Wert.", "Das stimmt so."],
+    "F2": ["size: int ist ein Datentyp, auf die Objektkarte gehört size = 40. blue braucht Anführungszeichen.", "size ist falsch."],
+    "F3": ["moveVertical verschiebt um 100, also 15 + 100 = 115. Richtig: 100 - 15 = 85.", "Das ist zu weit."] };
+  names.forEach((n, i) => {
+    ["pre", "final"].forEach((t, k) => {
+      if (t === "final" && i === 11) return;
+      const test = TESTS[t], ans = {};
+      test.items.forEach(it => it.parts.forEach((p, j) => {
+        const good = rnd(i + j, k + it.area) < (t === "pre" ? .55 : .8);
+        if (p.type === "match") ans[p.id] = Object.fromEntries(p.rows.map(([w, c], q) => [w, good || q ? c : "Klasse"]));
+        else if (p.type === "types") ans[p.id] = { diameter: "int", color: good ? "String" : "int", isVisible: "boolean", newColor: "String" };
+        else if (p.type === "code") ans[p.id] = { code: good ? "mond.moveVertical(-30);" : "mond.moveVertical(30);" };
+        else ans[p.id] = { verdict: good ? p.correct : VERDICTS.find(v => v !== p.correct), text: texts[p.id][good ? 0 : 1], fix: p.fix ? (good ? p.fix.expect + ";" : "") : undefined };
+      }));
+      const g = grade(test, ans);
+      all.push({ id: Date.now() + i * 10 + k, created_at: new Date(Date.now() - (2 - k) * 600000 + i * 1000).toISOString(), test: t, initials: n, points: g.points, max_points: g.max,
+                 status: { areas: g.status, judged: g.judged, parts: Object.fromEntries(Object.entries(g.parts).map(([q, v]) => [q, v.ok])) }, answers: ans });
+    });
+  });
+  ls.set(DEMO_KEY, all);
+}
+boot();
+</script>
+</body>
+</html>
